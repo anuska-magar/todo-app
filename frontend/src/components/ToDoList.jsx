@@ -3,6 +3,7 @@
 // All CRUD state lives here
 
 import { useState } from "react";
+import { ClipboardCheck } from "lucide-react";
 import Input from "./Input";
 import Button from "./Button";
 import TodoItem from "./TodoItem";
@@ -58,28 +59,36 @@ function TodoList() {
 
   return (
     <div>
-      {/* Add new todo bar */}
-      <div className="flex items-center gap-3 bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+      {/* Add new todo card */}
+      <div className="flex items-center gap-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-8">
         <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Add a new todo..." />
         <Button label="Add Todo" onClick={addTodo} />
       </div>
 
-      {/* Todo cards */}
-      <div>
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onDelete={deleteTodo}
-            onToggle={toggleTodo}
-            onEdit={editTodo}
-            onAddSub={addSubTodo}
-            onDeleteSub={deleteSubTodo}
-            onToggleSub={toggleSubTodo}
-            onEditSub={editSubTodo}
-          />
-        ))}
-      </div>
+      {/* Todo cards or empty state */}
+      {todos.length === 0 ? (
+        <div className="flex flex-col items-center justify-center text-center py-16 text-gray-400">
+          <ClipboardCheck className="w-12 h-12 mb-3 text-indigo-300" />
+          <p className="text-base font-medium text-gray-500">No todos yet</p>
+          <p className="text-sm mt-1">Add your first task above to get started.</p>
+        </div>
+      ) : (
+        <div>
+          {todos.map((todo) => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onDelete={deleteTodo}
+              onToggle={toggleTodo}
+              onEdit={editTodo}
+              onAddSub={addSubTodo}
+              onDeleteSub={deleteSubTodo}
+              onToggleSub={toggleSubTodo}
+              onEditSub={editSubTodo}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

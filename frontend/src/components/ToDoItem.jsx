@@ -3,6 +3,7 @@
 // Also shows/hides its nested SubTodoList
 
 import { useState } from "react";
+import { Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import Input from "./Input";
 import Button from "./Button";
 import Badge from "./Badge";
@@ -19,13 +20,17 @@ function TodoItem({ todo, onDelete, onToggle, onEdit, onAddSub, onDeleteSub, onT
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-3">
+    <div
+      className={`bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100
+                  p-5 mb-4 transition-all duration-300 animate-fade-in
+                  ${todo.completed ? "opacity-70" : ""}`}
+    >
       <div className="flex items-center gap-3 flex-wrap">
         <input
           type="checkbox"
           checked={todo.completed}
           onChange={() => onToggle(todo.id)}
-          className="w-5 h-5 accent-indigo-600"
+          className="w-5 h-5 accent-indigo-600 cursor-pointer"
         />
 
         {isEditing ? (
@@ -40,7 +45,7 @@ function TodoItem({ todo, onDelete, onToggle, onEdit, onAddSub, onDeleteSub, onT
         ) : (
           <>
             <span
-              className={`flex-1 text-sm font-medium ${
+              className={`flex-1 text-base font-medium ${
                 todo.completed ? "line-through text-gray-400" : "text-gray-800"
               }`}
             >
@@ -49,19 +54,31 @@ function TodoItem({ todo, onDelete, onToggle, onEdit, onAddSub, onDeleteSub, onT
 
             {todo.completed && <Badge text="Done" />}
 
-            <Button label="Edit" onClick={() => setIsEditing(true)} />
-            <Button label="Delete" onClick={() => onDelete(todo.id)} />
+            <Button
+              label="Edit"
+              variant="ghost"
+              icon={<Pencil className="w-3.5 h-3.5" />}
+              onClick={() => setIsEditing(true)}
+            />
+            <Button
+              label="Delete"
+              variant="danger"
+              icon={<Trash2 className="w-3.5 h-3.5" />}
+              onClick={() => onDelete(todo.id)}
+            />
           </>
         )}
       </div>
 
-      <div className="flex items-center gap-2 mt-2 pl-8">
+      <div className="flex items-center gap-2 mt-3 pl-8">
         {todo.subTodos.length > 0 && (
           <Badge text={`${todo.subTodos.length} subtask(s)`} />
         )}
 
         <Button
           label={showSubs ? "Hide Subtasks" : "Show Subtasks"}
+          variant="ghost"
+          icon={showSubs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           onClick={() => setShowSubs(!showSubs)}
         />
       </div>

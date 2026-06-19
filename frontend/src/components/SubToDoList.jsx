@@ -3,6 +3,7 @@
 // Supports add, edit, delete, and toggle complete for each subtodo
 
 import { useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import Input from "./Input";
 import Button from "./Button";
 
@@ -24,17 +25,17 @@ function SubTodoList({ subTodos, onAdd, onDelete, onToggle, onEdit }) {
   }
 
   return (
-    <div className="mt-3 pl-6 border-l-2 border-indigo-100 space-y-2">
+    <div className="mt-4 ml-4 pl-5 border-l-2 border-indigo-200 space-y-3">
       {subTodos.map((sub) => (
         <div
           key={sub.id}
-          className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2"
+          className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-2.5 transition-colors duration-300 hover:bg-indigo-50/50"
         >
           <input
             type="checkbox"
             checked={sub.completed}
             onChange={() => onToggle(sub.id)}
-            className="w-4 h-4 accent-indigo-600"
+            className="w-4 h-4 accent-indigo-600 cursor-pointer"
           />
 
           {editId === sub.id ? (
@@ -50,32 +51,39 @@ function SubTodoList({ subTodos, onAdd, onDelete, onToggle, onEdit }) {
             <>
               <span
                 className={`flex-1 text-sm ${
-                  sub.completed ? "line-through text-gray-400" : "text-gray-700"
+                  sub.completed ? "line-through text-gray-400 opacity-70" : "text-gray-700"
                 }`}
               >
                 {sub.text}
               </span>
               <Button
                 label="Edit"
+                variant="ghost"
+                icon={<Pencil className="w-3.5 h-3.5" />}
                 onClick={() => {
                   setEditId(sub.id);
                   setEditText(sub.text);
                 }}
               />
-              <Button label="Delete" onClick={() => onDelete(sub.id)} />
+              <Button
+                label="Delete"
+                variant="danger"
+                icon={<Trash2 className="w-3.5 h-3.5" />}
+                onClick={() => onDelete(sub.id)}
+              />
             </>
           )}
         </div>
       ))}
 
-      {/* Add new subtodo */}
-      <div className="flex items-center gap-2 pt-1">
+      {/* Add new subtodo — small card section */}
+      <div className="flex items-center gap-2 bg-white rounded-xl border border-gray-100 p-2.5 mt-2">
         <Input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Add a subtask..."
         />
-        <Button label="Add Subtask" onClick={handleAdd} />
+        <Button label="Add" onClick={handleAdd} />
       </div>
     </div>
   );
