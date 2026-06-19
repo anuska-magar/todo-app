@@ -9,7 +9,7 @@ function Button({ label, onClick, variant = "primary", icon }) {
 
   const variantClasses = {
     primary:
-      "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-sm hover:shadow-md",
+      "bg-black text-white shadow-sm hover:shadow-md",
     danger:
       "bg-red-50 text-red-600 hover:bg-red-100",
     ghost:
