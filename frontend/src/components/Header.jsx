@@ -1,34 +1,30 @@
+import { ClipboardList } from "lucide-react";
+
 function Header({ totalCount = 0, completedCount = 0 }) {
   const remaining = totalCount - completedCount;
 
   return (
-    <header
-      style={{
-        backgroundColor: "#4f46e5",
-        color: "#fff",
-        padding: "20px 32px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: "8px",
-      }}
-    >
-      <div>
-        <h1 style={{ margin: 0, fontSize: "1.75rem", fontWeight: "700" }}>📝 Todo App</h1>
-        <p style={{ margin: "4px 0 0", fontSize: "0.875rem", opacity: 0.85 }}>
-          Stay organized, one task at a time.
-        </p>
-      </div>
-
-      {/* Live task summary */}
-      {totalCount > 0 && (
-        <div style={{ fontSize: "0.875rem", opacity: 0.9, textAlign: "right" }}>
-          <span>{completedCount} done</span>
-          <span style={{ margin: "0 8px" }}>·</span>
-          <span>{remaining} remaining</span>
+    <header className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-white/60 px-8 py-6 mb-8">
+      <div className="flex justify-between items-center flex-wrap gap-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-3 rounded-xl shadow-sm">
+            <ClipboardList className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Todo App</h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Stay organized, one task at a time.
+            </p>
+          </div>
         </div>
-      )}
+
+        {/* Live task summary */}
+        {totalCount > 0 && (
+          <div className="bg-indigo-50 text-indigo-700 text-sm font-medium px-4 py-2 rounded-full">
+            {completedCount} done · {remaining} remaining
+          </div>
+        )}
+      </div>
     </header>
   );
 }
