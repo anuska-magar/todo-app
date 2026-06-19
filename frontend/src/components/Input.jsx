@@ -8,9 +8,10 @@ function Input({ value, onChange, placeholder }) {
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="w-full px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-700
-                 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500
-                 focus:border-transparent"
+      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700
+                 placeholder-gray-400 bg-white
+                 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent
+                 transition-all duration-300"
     />
   );
 }
