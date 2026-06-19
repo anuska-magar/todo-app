@@ -19,37 +19,52 @@ function TodoItem({ todo, onDelete, onToggle, onEdit, onAddSub, onDeleteSub, onT
   }
 
   return (
-    <div>
-      <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={() => onToggle(todo.id)}
-      />
-      {isEditing ? (
-        <>
-          <Input
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
-            placeholder="Edit todo"
-          />
-          <Button label="Save" onClick={handleSave} />
-        </>
-      ) : (
-        <>
-          <span>{todo.text}</span>
-          <Button label="Edit" onClick={() => setIsEditing(true)} />
-          <Button label="Delete" onClick={() => onDelete(todo.id)} />
-        </>
-      )}
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-3">
+      <div className="flex items-center gap-3 flex-wrap">
+        <input
+          type="checkbox"
+          checked={todo.completed}
+          onChange={() => onToggle(todo.id)}
+          className="w-5 h-5 accent-indigo-600"
+        />
 
-      {todo.subTodos.length > 0 && (
-        <Badge text={`${todo.subTodos.length} subtask(s)`} />
-      )}
+        {isEditing ? (
+          <>
+            <Input
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              placeholder="Edit todo"
+            />
+            <Button label="Save" onClick={handleSave} />
+          </>
+        ) : (
+          <>
+            <span
+              className={`flex-1 text-sm font-medium ${
+                todo.completed ? "line-through text-gray-400" : "text-gray-800"
+              }`}
+            >
+              {todo.text}
+            </span>
 
-      <Button
-        label={showSubs ? "Hide Subtasks" : "Show Subtasks"}
-        onClick={() => setShowSubs(!showSubs)}
-      />
+            {todo.completed && <Badge text="Done" />}
+
+            <Button label="Edit" onClick={() => setIsEditing(true)} />
+            <Button label="Delete" onClick={() => onDelete(todo.id)} />
+          </>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 mt-2 pl-8">
+        {todo.subTodos.length > 0 && (
+          <Badge text={`${todo.subTodos.length} subtask(s)`} />
+        )}
+
+        <Button
+          label={showSubs ? "Hide Subtasks" : "Show Subtasks"}
+          onClick={() => setShowSubs(!showSubs)}
+        />
+      </div>
 
       {showSubs && (
         <SubTodoList

@@ -24,14 +24,19 @@ function SubTodoList({ subTodos, onAdd, onDelete, onToggle, onEdit }) {
   }
 
   return (
-    <div>
+    <div className="mt-3 pl-6 border-l-2 border-indigo-100 space-y-2">
       {subTodos.map((sub) => (
-        <div key={sub.id}>
+        <div
+          key={sub.id}
+          className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2"
+        >
           <input
             type="checkbox"
             checked={sub.completed}
             onChange={() => onToggle(sub.id)}
+            className="w-4 h-4 accent-indigo-600"
           />
+
           {editId === sub.id ? (
             <>
               <Input
@@ -43,8 +48,20 @@ function SubTodoList({ subTodos, onAdd, onDelete, onToggle, onEdit }) {
             </>
           ) : (
             <>
-              <span>{sub.text}</span>
-              <Button label="Edit" onClick={() => { setEditId(sub.id); setEditText(sub.text); }} />
+              <span
+                className={`flex-1 text-sm ${
+                  sub.completed ? "line-through text-gray-400" : "text-gray-700"
+                }`}
+              >
+                {sub.text}
+              </span>
+              <Button
+                label="Edit"
+                onClick={() => {
+                  setEditId(sub.id);
+                  setEditText(sub.text);
+                }}
+              />
               <Button label="Delete" onClick={() => onDelete(sub.id)} />
             </>
           )}
@@ -52,12 +69,14 @@ function SubTodoList({ subTodos, onAdd, onDelete, onToggle, onEdit }) {
       ))}
 
       {/* Add new subtodo */}
-      <Input
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Add a subtask..."
-      />
-      <Button label="Add Subtask" onClick={handleAdd} />
+      <div className="flex items-center gap-2 pt-1">
+        <Input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Add a subtask..."
+        />
+        <Button label="Add Subtask" onClick={handleAdd} />
+      </div>
     </div>
   );
 }
