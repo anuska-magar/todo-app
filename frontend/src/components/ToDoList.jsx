@@ -58,22 +58,28 @@ function TodoList() {
 
   return (
     <div>
-      <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Add a new todo..." />
-      <Button label="Add Todo" onClick={addTodo} />
+      {/* Add new todo bar */}
+      <div className="flex items-center gap-3 bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Add a new todo..." />
+        <Button label="Add Todo" onClick={addTodo} />
+      </div>
 
-      {todos.map((todo) => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          onDelete={deleteTodo}
-          onToggle={toggleTodo}
-          onEdit={editTodo}
-          onAddSub={addSubTodo}
-          onDeleteSub={deleteSubTodo}
-          onToggleSub={toggleSubTodo}
-          onEditSub={editSubTodo}
-        />
-      ))}
+      {/* Todo cards */}
+      <div>
+        {todos.map((todo) => (
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            onDelete={deleteTodo}
+            onToggle={toggleTodo}
+            onEdit={editTodo}
+            onAddSub={addSubTodo}
+            onDeleteSub={deleteSubTodo}
+            onToggleSub={toggleSubTodo}
+            onEditSub={editSubTodo}
+          />
+        ))}
+      </div>
     </div>
   );
 }
