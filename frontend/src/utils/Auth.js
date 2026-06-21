@@ -1,3 +1,4 @@
+
 export function registerUser(name, email, password) {
   const existingUser = localStorage.getItem("user");
 
@@ -30,4 +31,14 @@ export function loginUser(email, password) {
   }
 
   return { success: false, message: "Incorrect email or password." };
+}
+
+// Check if someone is currently logged in
+export function isLoggedIn() {
+  return localStorage.getItem("isLoggedIn") === "true";
+}
+
+// Log the user out
+export function logoutUser() {
+  localStorage.removeItem("isLoggedIn");
 }
