@@ -13,6 +13,7 @@ function HomePage() {
 
   return (
     <Layout totalCount={totalCount} completedCount={completedCount}>
+      {/* Profile Section REMOVED - Now only accessible via header button */}
       <TodoList onCountChange={handleCountChange} />
     </Layout>
   );
