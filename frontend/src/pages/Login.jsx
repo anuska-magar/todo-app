@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { loginUser } from "../utils/auth";
@@ -7,13 +8,12 @@ import { loginUser } from "../utils/auth";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
-    e.preventDefault();
-
+  function handleSubmit() {
     if (!email || !password) {
       setError("Please fill in both fields.");
       return;
@@ -22,7 +22,7 @@ function Login() {
     const result = loginUser(email, password);
 
     if (result.success) {
-      navigate("/"); // go to home/todo page after login
+      navigate("/"); // go straight to home page after login
     } else {
       setError(result.message);
     }
@@ -52,7 +52,7 @@ function Login() {
         </div>
         <p className="text-gray-500 mb-6">Log in to access your todos.</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
@@ -69,12 +69,21 @@ function Login() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
-            <Input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {error && (
@@ -83,10 +92,8 @@ function Login() {
             </p>
           )}
 
-          <Button type="submit" className="w-full justify-center">
-            Log In
-          </Button>
-        </form>
+          <Button label="Enter" onClick={handleSubmit} variant="primary" />
+        </div>
 
         <p className="text-sm text-gray-500 mt-6 text-center">
           Don't have an account?{" "}
