@@ -4,10 +4,10 @@ function Header({ totalCount = 0, completedCount = 0 }) {
   const remaining = totalCount - completedCount;
 
   return (
-    <header className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-white/60 px-8 py-6 mb-8">
+    <header className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-white/60 px- py-6 mb-8">
       <div className="flex justify-between items-center flex-wrap gap-4">
         <div className="flex items-center gap-3">
-          <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-3 rounded-xl shadow-sm">
+          <div className="bg-black p-3 rounded-xl shadow-sm">
             <ClipboardList className="w-6 h-6 text-white" />
           </div>
           <div>
