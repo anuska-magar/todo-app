@@ -1,10 +1,11 @@
 // Input.jsx
 // A reusable text input used for typing a new todo or subtodo
+// type defaults to "text" so existing usages (todo, subtask) keep working unchanged
 
-function Input({ value, onChange, placeholder }) {
+function Input({ value, onChange, placeholder, type = "text" }) {
   return (
     <input
-      type="text"
+      type={type}
       value={value}
       onChange={onChange}
       placeholder={placeholder}

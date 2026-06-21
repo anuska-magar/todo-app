@@ -1,4 +1,3 @@
-
 export function registerUser(name, email, password) {
   const existingUser = localStorage.getItem("user");
 
@@ -11,6 +10,7 @@ export function registerUser(name, email, password) {
 
   const newUser = { name, email, password };
   localStorage.setItem("user", JSON.stringify(newUser));
+  localStorage.setItem("isLoggedIn", "true"); // auto-login after registering
 
   return { success: true, message: "Account created successfully!" };
 }

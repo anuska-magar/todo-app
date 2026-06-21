@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { registerUser } from "../utils/auth";
@@ -8,34 +9,27 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
-    e.preventDefault();
-
+  function handleSubmit() {
     if (!name || !email || !password) {
       setError("Please fill in all fields.");
-      setSuccess("");
       return;
     }
 
     if (password.length < 6) {
       setError("Password must be at least 6 characters.");
-      setSuccess("");
       return;
     }
 
     const result = registerUser(name, email, password);
 
     if (result.success) {
-      setError("");
-      setSuccess(result.message);
-      setTimeout(() => navigate("/login"), 1000);
+      navigate("/"); // go straight to home page after registering
     } else {
-      setSuccess("");
       setError(result.message);
     }
   }
@@ -64,7 +58,7 @@ function Register() {
         </div>
         <p className="text-gray-500 mb-6">Sign up to start organizing your tasks.</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Full Name
@@ -93,12 +87,21 @@ function Register() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
-            <Input
-              type="password"
-              placeholder="At least 6 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="At least 6 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {error && (
@@ -107,16 +110,8 @@ function Register() {
             </p>
           )}
 
-          {success && (
-            <p className="text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-              {success}
-            </p>
-          )}
-
-          <Button type="submit" className="w-full justify-center">
-            Create Account
-          </Button>
-        </form>
+          <Button label="Enter" onClick={handleSubmit} variant="primary" />
+        </div>
 
         <p className="text-sm text-gray-500 mt-6 text-center">
           Already have an account?{" "}
