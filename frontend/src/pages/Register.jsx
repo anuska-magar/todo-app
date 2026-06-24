@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, X } from "lucide-react";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { registerUser } from "../utils/auth";
@@ -9,9 +9,12 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const navigate = useNavigate();
 
@@ -26,16 +29,30 @@ function Register() {
       return;
     }
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
+    setError("");
+
     const result = await registerUser(name, email, password);
     setLoading(false);
 
     if (result.success) {
-      navigate("/");
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+        navigate("/");
+      }, 2500);
     } else {
       setError(result.message);
     }
   }
+
+  const passwordsMatch = confirmPassword && password === confirmPassword;
+  const passwordError = confirmPassword && !passwordsMatch;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -107,6 +124,37 @@ function Register() {
             </div>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password
+            </label>
+            <div className="relative">
+              <Input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={`${
+                  passwordError ? 'border-red-500 focus:ring-red-500' :
+                  confirmPassword && passwordsMatch ? 'border-green-500 focus:ring-green-500' : ''
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {confirmPassword && passwordError && (
+              <p className="text-xs text-red-600 mt-1">Passwords do not match</p>
+            )}
+            {confirmPassword && passwordsMatch && (
+              <p className="text-xs text-green-600 mt-1">Passwords match ✓</p>
+            )}
+          </div>
+
           {error && (
             <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
               {error}
@@ -117,6 +165,7 @@ function Register() {
             label={loading ? "Please wait..." : "Enter"}
             onClick={handleSubmit}
             variant="primary"
+            disabled={loading}
           />
         </div>
 
@@ -127,6 +176,32 @@ function Register() {
           </Link>
         </p>
       </div>
+
+      {/* Registration Success Toast */}
+      {showPopup && (
+        <div className="fixed top-4 right-4 z-50 animate-slideIn">
+          <div className="bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-sm w-80">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-green-800">Registration Successful!</p>
+                <p className="text-xs text-green-600 mt-0.5">Please login to continue.</p>
+              </div>
+              <button onClick={() => setShowPopup(false)}>
+                <X className="w-4 h-4 text-green-400 hover:text-green-600" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateX(100px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slideIn { animation: slideIn 0.3s ease-out; }
+      `}</style>
     </div>
   );
 }

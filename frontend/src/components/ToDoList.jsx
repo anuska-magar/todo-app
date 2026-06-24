@@ -14,7 +14,12 @@ function TodoList() {
 
   function addTodo() {
     if (text.trim() === "") return;
-    setTodos([...todos, { id: Date.now(), text, completed: false, subTodos: [] }]);
+    setTodos([...todos, { 
+      id: Date.now(), 
+      text, 
+      completed: false, 
+      subTodos: [] 
+    }]);
     setText("");
   }
 
@@ -30,16 +35,23 @@ function TodoList() {
     setTodos(todos.map((t) => t.id === id ? { ...t, text: newText } : t));
   }
 
+  // ============ SUBTASK FUNCTIONS (Level 1) ============
   function addSubTodo(todoId, subText) {
     setTodos(todos.map((t) => t.id !== todoId ? t : {
       ...t,
-      subTodos: [...t.subTodos, { id: Date.now(), text: subText, completed: false }],
+      subTodos: [...t.subTodos, { 
+        id: Date.now() + Math.random(), 
+        text: subText, 
+        completed: false,
+        subTodos: [] 
+      }],
     }));
   }
 
   function deleteSubTodo(todoId, subId) {
     setTodos(todos.map((t) => t.id !== todoId ? t : {
-      ...t, subTodos: t.subTodos.filter((s) => s.id !== subId),
+      ...t, 
+      subTodos: t.subTodos.filter((s) => s.id !== subId),
     }));
   }
 
@@ -57,11 +69,143 @@ function TodoList() {
     }));
   }
 
+  // ============ NESTED SUBTASK FUNCTIONS (Level 2+) ============
+  function addNestedSubTodo(todoId, parentId, subText) {
+    setTodos(todos.map((t) => {
+      if (t.id !== todoId) return t;
+      
+      // Recursive function to find and add to parent
+      const addToParent = (items) => {
+        return items.map((item) => {
+          if (item.id === parentId) {
+            return {
+              ...item,
+              subTodos: [...(item.subTodos || []), {
+                id: Date.now() + Math.random(),
+                text: subText,
+                completed: false,
+                subTodos: []
+              }]
+            };
+          }
+          if (item.subTodos && item.subTodos.length > 0) {
+            return {
+              ...item,
+              subTodos: addToParent(item.subTodos)
+            };
+          }
+          return item;
+        });
+      };
+
+      return {
+        ...t,
+        subTodos: addToParent(t.subTodos)
+      };
+    }));
+  }
+
+  function deleteNestedSubTodo(todoId, parentId, subId) {
+    setTodos(todos.map((t) => {
+      if (t.id !== todoId) return t;
+      
+      const deleteFromParent = (items) => {
+        return items.map((item) => {
+          if (item.id === parentId) {
+            return {
+              ...item,
+              subTodos: (item.subTodos || []).filter((s) => s.id !== subId)
+            };
+          }
+          if (item.subTodos && item.subTodos.length > 0) {
+            return {
+              ...item,
+              subTodos: deleteFromParent(item.subTodos)
+            };
+          }
+          return item;
+        });
+      };
+
+      return {
+        ...t,
+        subTodos: deleteFromParent(t.subTodos)
+      };
+    }));
+  }
+
+  function toggleNestedSubTodo(todoId, parentId, subId) {
+    setTodos(todos.map((t) => {
+      if (t.id !== todoId) return t;
+      
+      const toggleInParent = (items) => {
+        return items.map((item) => {
+          if (item.id === parentId) {
+            return {
+              ...item,
+              subTodos: (item.subTodos || []).map((s) => 
+                s.id === subId ? { ...s, completed: !s.completed } : s
+              )
+            };
+          }
+          if (item.subTodos && item.subTodos.length > 0) {
+            return {
+              ...item,
+              subTodos: toggleInParent(item.subTodos)
+            };
+          }
+          return item;
+        });
+      };
+
+      return {
+        ...t,
+        subTodos: toggleInParent(t.subTodos)
+      };
+    }));
+  }
+
+  function editNestedSubTodo(todoId, parentId, subId, newText) {
+    setTodos(todos.map((t) => {
+      if (t.id !== todoId) return t;
+      
+      const editInParent = (items) => {
+        return items.map((item) => {
+          if (item.id === parentId) {
+            return {
+              ...item,
+              subTodos: (item.subTodos || []).map((s) => 
+                s.id === subId ? { ...s, text: newText } : s
+              )
+            };
+          }
+          if (item.subTodos && item.subTodos.length > 0) {
+            return {
+              ...item,
+              subTodos: editInParent(item.subTodos)
+            };
+          }
+          return item;
+        });
+      };
+
+      return {
+        ...t,
+        subTodos: editInParent(t.subTodos)
+      };
+    }));
+  }
+
   return (
     <div>
       {/* Add new todo card */}
       <div className="flex items-center gap-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-8">
-        <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Add a new todo..." />
+        <Input 
+          value={text} 
+          onChange={(e) => setText(e.target.value)} 
+          placeholder="Add a new todo..."
+          onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+        />
         <Button label="Add Todo" onClick={addTodo} />
       </div>
 
@@ -85,6 +229,10 @@ function TodoList() {
               onDeleteSub={deleteSubTodo}
               onToggleSub={toggleSubTodo}
               onEditSub={editSubTodo}
+              onAddNestedSub={addNestedSubTodo}
+              onDeleteNestedSub={deleteNestedSubTodo}
+              onToggleNestedSub={toggleNestedSubTodo}
+              onEditNestedSub={editNestedSubTodo}
             />
           ))}
         </div>

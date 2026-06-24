@@ -1,15 +1,25 @@
 // TodoItem.jsx
-// A single todo row with edit, delete, toggle complete
-// Also shows/hides its nested SubTodoList
-
 import { useState } from "react";
-import { Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Pencil, Trash2, ChevronDown, ChevronUp, Plus } from "lucide-react";
 import Input from "./Input";
 import Button from "./Button";
 import Badge from "./Badge";
 import SubTodoList from "./SubTodoList";
 
-function TodoItem({ todo, onDelete, onToggle, onEdit, onAddSub, onDeleteSub, onToggleSub, onEditSub }) {
+function TodoItem({ 
+  todo, 
+  onDelete, 
+  onToggle, 
+  onEdit, 
+  onAddSub, 
+  onDeleteSub, 
+  onToggleSub, 
+  onEditSub,
+  onAddNestedSub,
+  onDeleteNestedSub,
+  onToggleNestedSub,
+  onEditNestedSub
+}) {
   const [showSubs, setShowSubs] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
@@ -19,10 +29,13 @@ function TodoItem({ todo, onDelete, onToggle, onEdit, onAddSub, onDeleteSub, onT
     setIsEditing(false);
   }
 
+  const totalSubs = todo.subTodos?.length || 0;
+  const completedSubs = todo.subTodos?.filter(s => s.completed).length || 0;
+
   return (
     <div
       className={`bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100
-                  p-5 mb-4 transition-all duration-300 animate-fade-in
+                  p-5 mb-4 transition-all duration-300
                   ${todo.completed ? "opacity-70" : ""}`}
     >
       <div className="flex items-center gap-3 flex-wrap">
@@ -53,6 +66,10 @@ function TodoItem({ todo, onDelete, onToggle, onEdit, onAddSub, onDeleteSub, onT
             </span>
 
             {todo.completed && <Badge text="Done" />}
+            
+            {totalSubs > 0 && (
+              <Badge text={`${completedSubs}/${totalSubs} subtasks`} />
+            )}
 
             <Button
               label="Edit"
@@ -70,19 +87,26 @@ function TodoItem({ todo, onDelete, onToggle, onEdit, onAddSub, onDeleteSub, onT
         )}
       </div>
 
-      <div className="flex items-center gap-2 mt-3 pl-8">
-        {todo.subTodos.length > 0 && (
-          <Badge text={`${todo.subTodos.length} subtask(s)`} />
+      {/* Subtask controls */}
+      <div className="flex items-center gap-2 mt-3 pl-8 flex-wrap">
+        {totalSubs > 0 && (
+          <Button
+            label={showSubs ? "Hide Subtasks" : `Show Subtasks (${totalSubs})`}
+            variant="ghost"
+            icon={showSubs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            onClick={() => setShowSubs(!showSubs)}
+          />
         )}
-
+        
         <Button
-          label={showSubs ? "Hide Subtasks" : "Show Subtasks"}
-          variant="ghost"
-          icon={showSubs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-          onClick={() => setShowSubs(!showSubs)}
+          label="+ Add Subtask"
+          variant="primary"
+          icon={<Plus className="w-3.5 h-3.5" />}
+          onClick={() => setShowSubs(true)}
         />
       </div>
 
+      {/* Subtask List */}
       {showSubs && (
         <SubTodoList
           subTodos={todo.subTodos}
@@ -90,6 +114,11 @@ function TodoItem({ todo, onDelete, onToggle, onEdit, onAddSub, onDeleteSub, onT
           onDelete={(subId) => onDeleteSub(todo.id, subId)}
           onToggle={(subId) => onToggleSub(todo.id, subId)}
           onEdit={(subId, newText) => onEditSub(todo.id, subId, newText)}
+          onAddNested={(parentId, text) => onAddNestedSub(todo.id, parentId, text)}
+          onDeleteNested={(parentId, subId) => onDeleteNestedSub(todo.id, parentId, subId)}
+          onToggleNested={(parentId, subId) => onToggleNestedSub(todo.id, parentId, subId)}
+          onEditNested={(parentId, subId, newText) => onEditNestedSub(todo.id, parentId, subId, newText)}
+          level={0}
         />
       )}
     </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, X } from "lucide-react";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { loginUser } from "../utils/auth";
@@ -10,6 +10,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -21,11 +22,17 @@ function Login() {
     }
 
     setLoading(true);
+    setError("");
+
     const result = await loginUser(email, password);
     setLoading(false);
 
     if (result.success) {
-      navigate("/");
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+        navigate("/");
+      }, 2500);
     } else {
       setError(result.message);
     }
@@ -95,11 +102,14 @@ function Login() {
             </p>
           )}
 
-          <Button
-            label={loading ? "Please wait..." : "Enter"}
-            onClick={handleSubmit}
-            variant="primary"
-          />
+          <div className="flex justify-center">
+            <Button
+              label={loading ? "Logging in..." : "Login"}
+              onClick={handleSubmit}
+              variant="primary"
+              disabled={loading}
+            />
+          </div>
         </div>
 
         <p className="text-sm text-gray-500 mt-6 text-center">
@@ -109,6 +119,32 @@ function Login() {
           </Link>
         </p>
       </div>
+
+      {/* Login Success Toast */}
+      {showPopup && (
+        <div className="fixed top-4 right-4 z-50 animate-slideIn">
+          <div className="bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-sm w-80">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-green-800">Login Successful!</p>
+                <p className="text-xs text-green-600 mt-0.5">Welcome back! You have been logged in.</p>
+              </div>
+              <button onClick={() => setShowPopup(false)}>
+                <X className="w-4 h-4 text-green-400 hover:text-green-600" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateX(100px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slideIn { animation: slideIn 0.3s ease-out; }
+      `}</style>
     </div>
   );
 }

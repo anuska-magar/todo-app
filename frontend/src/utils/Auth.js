@@ -11,7 +11,7 @@ export async function registerUser(name, email, password) {
     const newAccount = await account.create(ID.unique(), email, password, name);
     await account.createEmailPasswordSession(email, password);
     await databases.createDocument(DB_ID, USERS_COLLECTION_ID, newAccount.$id, {
-      userName: name,
+      username: name,
     });
     return { success: true, message: "Account created successfully!" };
   } catch (error) {
