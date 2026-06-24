@@ -1,3 +1,4 @@
+// utils/auth.js
 export function registerUser(name, email, password) {
   const existingUser = localStorage.getItem("user");
 
