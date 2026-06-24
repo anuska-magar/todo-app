@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, X } from "lucide-react";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { loginUser } from "../utils/auth";
@@ -10,6 +10,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
   const navigate = useNavigate();
 
@@ -22,7 +23,12 @@ function Login() {
     const result = loginUser(email, password);
 
     if (result.success) {
-      navigate("/"); // go straight to home page after login
+      setShowPopup(true);
+      // Navigate after popup closes
+      setTimeout(() => {
+        setShowPopup(false);
+        navigate("/");
+      }, 2500);
     } else {
       setError(result.message);
     }
@@ -92,7 +98,9 @@ function Login() {
             </p>
           )}
 
-          <Button label="Enter" onClick={handleSubmit} variant="primary" />
+          <div className="flex justify-center">
+            <Button label="Login" onClick={handleSubmit} variant="primary" />
+          </div>
         </div>
 
         <p className="text-sm text-gray-500 mt-6 text-center">
@@ -102,6 +110,56 @@ function Login() {
           </Link>
         </p>
       </div>
+
+      {/* Small Toast Notification - Top Right */}
+      {showPopup && (
+        <div className="fixed top-4 right-4 z-50 animate-slideIn">
+          <div className="bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-sm w-80">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-green-800">Login Successful!</p>
+                <p className="text-xs text-green-600 mt-0.5">Welcome back! You have been logged in.</p>
+              </div>
+              <button
+                onClick={() => setShowPopup(false)}
+                className="flex-shrink-0 text-green-400 hover:text-green-600 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add this CSS to your global styles or component */}
+      <style jsx>{`
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(100px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        @keyframes slideOut {
+          from {
+            opacity: 1;
+            transform: translateX(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateX(100px);
+          }
+        }
+        .animate-slideIn {
+          animation: slideIn 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 }
