@@ -1,5 +1,7 @@
-// utils/auth.js
+// utils/auth.js - Simple localStorage version
+
 export function registerUser(name, email, password) {
+  // Check if user already exists in localStorage
   const existingUser = localStorage.getItem("user");
 
   if (existingUser) {
@@ -9,14 +11,26 @@ export function registerUser(name, email, password) {
     }
   }
 
-  const newUser = { name, email, password };
+  // Create new user
+  const newUser = { 
+    name, 
+    email, 
+    password,
+    joinedDate: new Date().toLocaleDateString('en-US', { 
+      month: 'long', 
+      year: 'numeric' 
+    })
+  };
+  
   localStorage.setItem("user", JSON.stringify(newUser));
-  localStorage.setItem("isLoggedIn", "true"); // auto-login after registering
+  
+  // Don't auto-login - user should go to login page
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("currentUser");
 
   return { success: true, message: "Account created successfully!" };
 }
 
-// Check login credentials against the saved user (called from Login page)
 export function loginUser(email, password) {
   const savedUser = localStorage.getItem("user");
 
@@ -28,18 +42,27 @@ export function loginUser(email, password) {
 
   if (user.email === email && user.password === password) {
     localStorage.setItem("isLoggedIn", "true");
+    // Store user data for display
+    localStorage.setItem("currentUser", JSON.stringify({
+      name: user.name,
+      email: user.email,
+      joinedDate: user.joinedDate || new Date().toLocaleDateString('en-US', { 
+        month: 'long', 
+        year: 'numeric' 
+      })
+    }));
     return { success: true, message: "Login successful!" };
   }
 
   return { success: false, message: "Incorrect email or password." };
 }
 
-// Check if someone is currently logged in
 export function isLoggedIn() {
   return localStorage.getItem("isLoggedIn") === "true";
 }
 
-// Log the user out
 export function logoutUser() {
   localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("currentUser");
+  return { success: true };
 }

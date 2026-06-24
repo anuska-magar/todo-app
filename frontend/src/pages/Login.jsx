@@ -11,6 +11,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -20,11 +21,13 @@ function Login() {
       return;
     }
 
+    setLoading(true);
+    setError("");
+
     const result = loginUser(email, password);
 
     if (result.success) {
       setShowPopup(true);
-      // Navigate after popup closes
       setTimeout(() => {
         setShowPopup(false);
         navigate("/");
@@ -32,6 +35,7 @@ function Login() {
     } else {
       setError(result.message);
     }
+    setLoading(false);
   }
 
   return (
@@ -99,7 +103,12 @@ function Login() {
           )}
 
           <div className="flex justify-center">
-            <Button label="Login" onClick={handleSubmit} variant="primary" />
+            <Button 
+              label={loading ? "Logging in..." : "Login"} 
+              onClick={handleSubmit} 
+              variant="primary"
+              disabled={loading}
+            />
           </div>
         </div>
 
@@ -111,7 +120,7 @@ function Login() {
         </p>
       </div>
 
-      {/* Small Toast Notification - Top Right */}
+      {/* Login Success Toast Notification */}
       {showPopup && (
         <div className="fixed top-4 right-4 z-50 animate-slideIn">
           <div className="bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-sm w-80">
@@ -134,7 +143,6 @@ function Login() {
         </div>
       )}
 
-      {/* Add this CSS to your global styles or component */}
       <style jsx>{`
         @keyframes slideIn {
           from {
@@ -144,16 +152,6 @@ function Login() {
           to {
             opacity: 1;
             transform: translateX(0);
-          }
-        }
-        @keyframes slideOut {
-          from {
-            opacity: 1;
-            transform: translateX(0);
-          }
-          to {
-            opacity: 0;
-            transform: translateX(100px);
           }
         }
         .animate-slideIn {

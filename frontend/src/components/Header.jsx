@@ -2,6 +2,7 @@ import { ClipboardList, LogOut, User, X, Mail, Calendar, CheckCircle } from "luc
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Button from "./Button";
+import { logoutUser } from "../utils/auth";
 
 function Header({ totalCount = 0, completedCount = 0 }) {
   const remaining = totalCount - completedCount;
@@ -12,36 +13,46 @@ function Header({ totalCount = 0, completedCount = 0 }) {
   
   // Get user data from localStorage
   const [user, setUser] = useState(() => {
-    const userData = localStorage.getItem('user');
-    return userData ? JSON.parse(userData) : {
+    const userData = localStorage.getItem('currentUser');
+    if (userData) {
+      const parsed = JSON.parse(userData);
+      return {
+        name: parsed.name || 'Guest User',
+        email: parsed.email || 'guest@example.com',
+        joinedDate: parsed.joinedDate || new Date().toLocaleDateString('en-US', { 
+          month: 'long', 
+          year: 'numeric' 
+        }),
+        role: 'User'
+      };
+    }
+    return {
       name: 'Guest User',
       email: 'guest@example.com',
-      joinedDate: 'January 2024',
+      joinedDate: new Date().toLocaleDateString('en-US', { 
+        month: 'long', 
+        year: 'numeric' 
+      }),
       role: 'Guest'
     };
   });
 
   const handleLogout = () => {
-    // Show confirmation popup instead of logging out immediately
     setShowLogoutConfirm(true);
   };
 
   const confirmLogout = () => {
-    // Close confirmation popup
     setShowLogoutConfirm(false);
     
-    // Remove token and user data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    const result = logoutUser();
     
-    // Show success notification
-    setShowLogoutSuccess(true);
-    
-    // Navigate to login after 2.5 seconds
-    setTimeout(() => {
-      setShowLogoutSuccess(false);
-      navigate('/login');
-    }, 2500);
+    if (result.success) {
+      setShowLogoutSuccess(true);
+      setTimeout(() => {
+        setShowLogoutSuccess(false);
+        navigate('/login');
+      }, 2500);
+    }
   };
 
   const cancelLogout = () => {
@@ -73,14 +84,12 @@ function Header({ totalCount = 0, completedCount = 0 }) {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Live task summary */}
             {totalCount > 0 && (
               <div className="bg-indigo-50 text-indigo-700 text-sm font-medium px-4 py-2 rounded-full">
                 {completedCount} done · {remaining} remaining
               </div>
             )}
 
-            {/* Profile Button */}
             <Button 
               label="Profile" 
               onClick={handleProfileClick} 
@@ -88,7 +97,6 @@ function Header({ totalCount = 0, completedCount = 0 }) {
               icon={<User className="w-4 h-4" />}
             />
 
-            {/* Logout Button */}
             <Button 
               label="Logout" 
               onClick={handleLogout} 
@@ -130,7 +138,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
         </div>
       )}
 
-      {/* Logout Success Toast Notification - Top Right */}
+      {/* Logout Success Toast Notification */}
       {showLogoutSuccess && (
         <div className="fixed top-4 right-4 z-50 animate-slideIn">
           <div className="bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-sm w-80">
@@ -156,8 +164,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
       {/* Profile Modal */}
       {showProfileModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden">
-            {/* Modal Header */}
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden animate-fadeIn">
             <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
               <h3 className="text-xl font-bold text-gray-800">Profile Details</h3>
               <button 
@@ -168,9 +175,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6">
-              {/* Avatar */}
               <div className="flex flex-col items-center mb-6">
                 <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-2xl shadow-lg">
                   <User className="w-16 h-16 text-white" />
@@ -185,7 +190,6 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 )}
               </div>
 
-              {/* User Details */}
               <div className="space-y-3">
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                   <div className="bg-indigo-100 p-2 rounded-lg">
@@ -218,7 +222,6 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 </div>
               </div>
 
-              {/* Task Statistics */}
               {totalCount > 0 && (
                 <div className="mt-6 pt-6 border-t border-gray-100">
                   <h4 className="text-sm font-semibold text-gray-700 mb-3">Task Statistics</h4>
@@ -240,7 +243,6 @@ function Header({ totalCount = 0, completedCount = 0 }) {
               )}
             </div>
 
-            {/* Modal Footer */}
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
               <Button 
                 label="Close" 
@@ -252,7 +254,6 @@ function Header({ totalCount = 0, completedCount = 0 }) {
         </div>
       )}
 
-      {/* CSS Animations */}
       <style jsx>{`
         @keyframes fadeIn {
           from {
