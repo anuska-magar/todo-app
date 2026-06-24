@@ -11,24 +11,27 @@ function Register() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!name || !email || !password) {
       setError("Please fill in all fields.");
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
       return;
     }
 
-    const result = registerUser(name, email, password);
+    setLoading(true);
+    const result = await registerUser(name, email, password);
+    setLoading(false);
 
     if (result.success) {
-      navigate("/"); // go straight to home page after registering
+      navigate("/");
     } else {
       setError(result.message);
     }
@@ -90,7 +93,7 @@ function Register() {
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
-                placeholder="At least 6 characters"
+                placeholder="At least 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -110,7 +113,11 @@ function Register() {
             </p>
           )}
 
-          <Button label="Enter" onClick={handleSubmit} variant="primary" />
+          <Button
+            label={loading ? "Please wait..." : "Enter"}
+            onClick={handleSubmit}
+            variant="primary"
+          />
         </div>
 
         <p className="text-sm text-gray-500 mt-6 text-center">

@@ -1,44 +1,55 @@
-export function registerUser(name, email, password) {
-  const existingUser = localStorage.getItem("user");
+import { account, databases, DB_ID, USERS_COLLECTION_ID } from "../appwrite/config";
+import { ID } from "appwrite";
 
-  if (existingUser) {
-    const user = JSON.parse(existingUser);
-    if (user.email === email) {
-      return { success: false, message: "An account with this email already exists." };
+export async function registerUser(name, email, password) {
+  try {
+    try {
+      await account.deleteSession("current");
+    } catch {
+      // no session active, continue
     }
+    const newAccount = await account.create(ID.unique(), email, password, name);
+    await account.createEmailPasswordSession(email, password);
+    await databases.createDocument(DB_ID, USERS_COLLECTION_ID, newAccount.$id, {
+      userName: name,
+    });
+    return { success: true, message: "Account created successfully!" };
+  } catch (error) {
+    return { success: false, message: error.message };
   }
-
-  const newUser = { name, email, password };
-  localStorage.setItem("user", JSON.stringify(newUser));
-  localStorage.setItem("isLoggedIn", "true"); // auto-login after registering
-
-  return { success: true, message: "Account created successfully!" };
 }
 
-// Check login credentials against the saved user (called from Login page)
-export function loginUser(email, password) {
-  const savedUser = localStorage.getItem("user");
-
-  if (!savedUser) {
-    return { success: false, message: "No account found. Please register first." };
-  }
-
-  const user = JSON.parse(savedUser);
-
-  if (user.email === email && user.password === password) {
-    localStorage.setItem("isLoggedIn", "true");
+export async function loginUser(email, password) {
+  try {
+    await account.createEmailPasswordSession(email, password);
     return { success: true, message: "Login successful!" };
+  } catch (error) {
+    return { success: false, message: error.message };
   }
-
-  return { success: false, message: "Incorrect email or password." };
 }
 
-// Check if someone is currently logged in
-export function isLoggedIn() {
-  return localStorage.getItem("isLoggedIn") === "true";
+export async function isLoggedIn() {
+  try {
+    await account.get();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-// Log the user out
-export function logoutUser() {
-  localStorage.removeItem("isLoggedIn");
+export async function logoutUser() {
+  try {
+    await account.deleteSession("current");
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+export async function getCurrentUser() {
+  try {
+    return await account.get();
+  } catch {
+    return null;
+  }
 }

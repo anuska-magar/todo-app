@@ -1,26 +1,38 @@
 import { ClipboardList, LogOut, User, X, Mail, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "./Button";
+import { getCurrentUser, logoutUser } from "../utils/auth";
 
 function Header({ totalCount = 0, completedCount = 0 }) {
   const remaining = totalCount - completedCount;
   const navigate = useNavigate();
   const [showProfileModal, setShowProfileModal] = useState(false);
-  
-  // Get user data from localStorage
-  const [user, setUser] = useState(() => {
-    const userData = localStorage.getItem('user');
-    return userData ? JSON.parse(userData) : {
-      name: 'Guest User',
-      email: 'guest@example.com',
-      joinedDate: 'January 2024',
-      role: 'Guest'
-    };
+
+  const [user, setUser] = useState({
+    name: 'Guest User',
+    email: 'guest@example.com',
+    joinedDate: '',
+    role: 'User'
   });
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
+  useEffect(() => {
+    async function fetchUser() {
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        setUser({
+          name: currentUser.name,
+          email: currentUser.email,
+          joinedDate: new Date(currentUser.$createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+          role: 'User'
+        });
+      }
+    }
+    fetchUser();
+  }, []);
+
+  const handleLogout = async () => {
+    await logoutUser();
     navigate('/login');
   };
 
@@ -49,25 +61,22 @@ function Header({ totalCount = 0, completedCount = 0 }) {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Live task summary */}
             {totalCount > 0 && (
               <div className="bg-indigo-50 text-indigo-700 text-sm font-medium px-4 py-2 rounded-full">
                 {completedCount} done · {remaining} remaining
               </div>
             )}
 
-            {/* Profile Button */}
-            <Button 
-              label="Profile" 
-              onClick={handleProfileClick} 
+            <Button
+              label="Profile"
+              onClick={handleProfileClick}
               variant="ghost"
               icon={<User className="w-4 h-4" />}
             />
 
-            {/* Logout Button */}
-            <Button 
-              label="Logout" 
-              onClick={handleLogout} 
+            <Button
+              label="Logout"
+              onClick={handleLogout}
               variant="danger"
               icon={<LogOut className="w-4 h-4" />}
             />
@@ -75,14 +84,12 @@ function Header({ totalCount = 0, completedCount = 0 }) {
         </div>
       </header>
 
-      {/* Profile Modal */}
       {showProfileModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden">
-            {/* Modal Header */}
             <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
               <h3 className="text-xl font-bold text-gray-800">Profile Details</h3>
-              <button 
+              <button
                 onClick={handleCloseModal}
                 className="p-1 hover:bg-gray-100 rounded-full transition-colors"
               >
@@ -90,9 +97,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6">
-              {/* Avatar */}
               <div className="flex flex-col items-center mb-6">
                 <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-2xl shadow-lg">
                   <User className="w-16 h-16 text-white" />
@@ -107,7 +112,6 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 )}
               </div>
 
-              {/* User Details */}
               <div className="space-y-3">
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                   <div className="bg-indigo-100 p-2 rounded-lg">
@@ -140,7 +144,6 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 </div>
               </div>
 
-              {/* Task Statistics */}
               {totalCount > 0 && (
                 <div className="mt-6 pt-6 border-t border-gray-100">
                   <h4 className="text-sm font-semibold text-gray-700 mb-3">Task Statistics</h4>
@@ -162,11 +165,10 @@ function Header({ totalCount = 0, completedCount = 0 }) {
               )}
             </div>
 
-            {/* Modal Footer */}
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
-              <Button 
-                label="Close" 
-                onClick={handleCloseModal} 
+              <Button
+                label="Close"
+                onClick={handleCloseModal}
                 variant="ghost"
               />
             </div>

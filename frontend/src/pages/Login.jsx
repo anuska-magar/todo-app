@@ -10,19 +10,22 @@ function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!email || !password) {
       setError("Please fill in both fields.");
       return;
     }
 
-    const result = loginUser(email, password);
+    setLoading(true);
+    const result = await loginUser(email, password);
+    setLoading(false);
 
     if (result.success) {
-      navigate("/"); // go straight to home page after login
+      navigate("/");
     } else {
       setError(result.message);
     }
@@ -92,7 +95,11 @@ function Login() {
             </p>
           )}
 
-          <Button label="Enter" onClick={handleSubmit} variant="primary" />
+          <Button
+            label={loading ? "Please wait..." : "Enter"}
+            onClick={handleSubmit}
+            variant="primary"
+          />
         </div>
 
         <p className="text-sm text-gray-500 mt-6 text-center">
