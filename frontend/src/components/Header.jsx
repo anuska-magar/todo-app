@@ -1,4 +1,4 @@
-import { ClipboardList, LogOut, User, X, Mail, Calendar } from "lucide-react";
+import { ClipboardList, LogOut, User, X, Mail, Calendar, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Button from "./Button";
@@ -7,6 +7,8 @@ function Header({ totalCount = 0, completedCount = 0 }) {
   const remaining = totalCount - completedCount;
   const navigate = useNavigate();
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showLogoutSuccess, setShowLogoutSuccess] = useState(false);
   
   // Get user data from localStorage
   const [user, setUser] = useState(() => {
@@ -20,8 +22,30 @@ function Header({ totalCount = 0, completedCount = 0 }) {
   });
 
   const handleLogout = () => {
+    // Show confirmation popup instead of logging out immediately
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    // Close confirmation popup
+    setShowLogoutConfirm(false);
+    
+    // Remove token and user data
     localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem('user');
+    
+    // Show success notification
+    setShowLogoutSuccess(true);
+    
+    // Navigate to login after 2.5 seconds
+    setTimeout(() => {
+      setShowLogoutSuccess(false);
+      navigate('/login');
+    }, 2500);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
   };
 
   const handleProfileClick = () => {
@@ -74,6 +98,60 @@ function Header({ totalCount = 0, completedCount = 0 }) {
           </div>
         </div>
       </header>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full shadow-xl overflow-hidden animate-fadeIn">
+            <div className="p-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                  <LogOut className="w-8 h-8 text-red-500" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Logout Confirmation</h3>
+                <p className="text-gray-600 text-sm">
+                  Are you sure you want to logout?
+                </p>
+              </div>
+            </div>
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex gap-3 justify-end">
+              <Button 
+                label="Cancel" 
+                onClick={cancelLogout} 
+                variant="ghost"
+              />
+              <Button 
+                label="Logout" 
+                onClick={confirmLogout} 
+                variant="danger"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logout Success Toast Notification - Top Right */}
+      {showLogoutSuccess && (
+        <div className="fixed top-4 right-4 z-50 animate-slideIn">
+          <div className="bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-sm w-80">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-green-800">Logged Out Successfully!</p>
+                <p className="text-xs text-green-600 mt-0.5">You have been logged out.</p>
+              </div>
+              <button
+                onClick={() => setShowLogoutSuccess(false)}
+                className="flex-shrink-0 text-green-400 hover:text-green-600 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Profile Modal */}
       {showProfileModal && (
@@ -173,6 +251,36 @@ function Header({ totalCount = 0, completedCount = 0 }) {
           </div>
         </div>
       )}
+
+      {/* CSS Animations */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(100px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+        .animate-slideIn {
+          animation: slideIn 0.3s ease-out;
+        }
+      `}</style>
     </>
   );
 }
