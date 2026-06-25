@@ -5,7 +5,8 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import { loginUser } from "../utils/auth";
 
-function Login() {
+
+function Login({setLoggedIn}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -25,9 +26,9 @@ function Login() {
     setError("");
 
     const result = await loginUser(email, password);
-    setLoading(false);
 
     if (result.success) {
+      setLoggedIn(true);
       setShowPopup(true);
       setTimeout(() => {
         setShowPopup(false);
@@ -36,6 +37,7 @@ function Login() {
     } else {
       setError(result.message);
     }
+    setLoading(false);
   }
 
   return (
@@ -103,9 +105,9 @@ function Login() {
           )}
 
           <div className="flex justify-center">
-            <Button
-              label={loading ? "Logging in..." : "Login"}
-              onClick={handleSubmit}
+            <Button 
+              label={loading ? "Logging in..." : "Login"} 
+              onClick={handleSubmit} 
               variant="primary"
               disabled={loading}
             />
@@ -120,18 +122,23 @@ function Login() {
         </p>
       </div>
 
-      {/* Login Success Toast */}
+      {/* Login Success Toast Notification */}
       {showPopup && (
         <div className="fixed top-4 right-4 z-50 animate-slideIn">
           <div className="bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-sm w-80">
             <div className="flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
-              <div className="flex-1">
+              <div className="flex-shrink-0">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+              </div>
+              <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-green-800">Login Successful!</p>
                 <p className="text-xs text-green-600 mt-0.5">Welcome back! You have been logged in.</p>
               </div>
-              <button onClick={() => setShowPopup(false)}>
-                <X className="w-4 h-4 text-green-400 hover:text-green-600" />
+              <button
+                onClick={() => setShowPopup(false)}
+                className="flex-shrink-0 text-green-400 hover:text-green-600 transition-colors"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -140,10 +147,18 @@ function Login() {
 
       <style jsx>{`
         @keyframes slideIn {
-          from { opacity: 0; transform: translateX(100px); }
-          to { opacity: 1; transform: translateX(0); }
+          from {
+            opacity: 0;
+            transform: translateX(100px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
         }
-        .animate-slideIn { animation: slideIn 0.3s ease-out; }
+        .animate-slideIn {
+          animation: slideIn 0.3s ease-out;
+        }
       `}</style>
     </div>
   );

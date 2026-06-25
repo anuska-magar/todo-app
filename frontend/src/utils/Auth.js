@@ -12,6 +12,7 @@ export async function registerUser(name, email, password) {
     await account.createEmailPasswordSession(email, password);
     await databases.createDocument(DB_ID, USERS_COLLECTION_ID, newAccount.$id, {
       username: name,
+      email: email,
     });
     return { success: true, message: "Account created successfully!" };
   } catch (error) {
@@ -21,6 +22,11 @@ export async function registerUser(name, email, password) {
 
 export async function loginUser(email, password) {
   try {
+    try {
+      await account.deleteSession("current");
+    } catch {
+      // no session active, continue
+    }
     await account.createEmailPasswordSession(email, password);
     return { success: true, message: "Login successful!" };
   } catch (error) {

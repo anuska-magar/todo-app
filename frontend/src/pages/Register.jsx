@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff, CheckCircle, X } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { registerUser } from "../utils/auth";
@@ -13,13 +13,19 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  async function handleSubmit() {
-    if (!name || !email || !password) {
+  async function handleSubmit(e) {
+    // 1. Prevent default form submission / browser reload
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+    }
+
+   // 2. Client-side Validation Checks
+    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
       setError("Please fill in all fields.");
       return;
     }
@@ -34,23 +40,32 @@ function Register() {
       return;
     }
 
+    // 3. Start Loading State
     setLoading(true);
     setError("");
 
-    const result = await registerUser(name, email, password);
-    setLoading(false);
+    try {
+      // 4. Trigger the full Appwrite registration function
+      const result = await registerUser(name.trim(), email.trim(), password);
 
-    if (result.success) {
-      setShowPopup(true);
-      setTimeout(() => {
-        setShowPopup(false);
-        navigate("/");
-      }, 2500);
-    } else {
-      setError(result.message);
+      if (result.success) {
+        setShowPopup(true);
+
+        setTimeout(() => {
+          setShowPopup(false);
+          navigate("/login");
+        }, 2500);
+      } else {
+        setError(result.message);
+      }
+    } catch {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      // 5. Always stop loading, regardless of whether it succeeded or failed
+      setLoading(false);
     }
   }
-
+  // Check if passwords match for visual feedback
   const passwordsMatch = confirmPassword && password === confirmPassword;
   const passwordError = confirmPassword && !passwordsMatch;
 
@@ -85,7 +100,7 @@ function Register() {
             </label>
             <Input
               type="text"
-              placeholder="John Doe"
+              placeholder="Ram Bahadur"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -134,10 +149,9 @@ function Register() {
                 placeholder="Confirm your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className={`${
-                  passwordError ? 'border-red-500 focus:ring-red-500' :
-                  confirmPassword && passwordsMatch ? 'border-green-500 focus:ring-green-500' : ''
-                }`}
+                className={`${passwordError ? 'border-red-500 focus:ring-red-500' :
+                    confirmPassword && passwordsMatch ? 'border-green-500 focus:ring-green-500' : ''
+                  }`}
               />
               <button
                 type="button"
@@ -161,12 +175,14 @@ function Register() {
             </p>
           )}
 
-          <Button
-            label={loading ? "Please wait..." : "Enter"}
-            onClick={handleSubmit}
-            variant="primary"
-            disabled={loading}
-          />
+          <div className="flex justify-center">
+            <Button
+              label={loading ? "Registering..." : "Register"}
+              onClick={handleSubmit}
+              variant="primary"
+              disabled={loading}
+            />
+          </div>
         </div>
 
         <p className="text-sm text-gray-500 mt-6 text-center">
@@ -177,30 +193,47 @@ function Register() {
         </p>
       </div>
 
-      {/* Registration Success Toast */}
+      {/* Registration Success Toast Notification */}
       {showPopup && (
         <div className="fixed top-4 right-4 z-50 animate-slideIn">
           <div className="bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-sm w-80">
             <div className="flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
-              <div className="flex-1">
+              <div className="flex-shrink-0">
+                <svg className="w-5 h-5 text-green-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-green-800">Registration Successful!</p>
                 <p className="text-xs text-green-600 mt-0.5">Please login to continue.</p>
               </div>
-              <button onClick={() => setShowPopup(false)}>
-                <X className="w-4 h-4 text-green-400 hover:text-green-600" />
+              <button
+                onClick={() => setShowPopup(false)}
+                className="flex-shrink-0 text-green-400 hover:text-green-600 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
           </div>
         </div>
       )}
 
-      <style jsx>{`
+      <style jsx="true">{`
         @keyframes slideIn {
-          from { opacity: 0; transform: translateX(100px); }
-          to { opacity: 1; transform: translateX(0); }
+          from {
+            opacity: 0;
+            transform: translateX(100px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
         }
-        .animate-slideIn { animation: slideIn 0.3s ease-out; }
+        .animate-slideIn {
+          animation: slideIn 0.3s ease-out;
+        }
       `}</style>
     </div>
   );
