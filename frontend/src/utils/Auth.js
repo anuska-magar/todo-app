@@ -1,3 +1,4 @@
+// frontend/src/utils/auth.js
 import { account, databases, DB_ID, USERS_COLLECTION_ID } from "../appwrite/config";
 import { ID } from "appwrite";
 
