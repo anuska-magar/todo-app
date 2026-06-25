@@ -54,7 +54,7 @@ function Register() {
         setTimeout(() => {
           setShowPopup(false);
           navigate("/login");
-        }, 2500);
+        }, 800);
       } else {
         setError(result.message);
       }

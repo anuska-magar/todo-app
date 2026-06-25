@@ -41,10 +41,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
     setShowLogoutConfirm(false);
     await logoutUser();
     setShowLogoutSuccess(true);
-    setTimeout(() => {
-      setShowLogoutSuccess(false);
-      navigate('/login');
-    }, 2500);
+    setTimeout(() => navigate('/login'), 800); // ✅ changed from 2500
   };
 
   const cancelLogout = () => {
@@ -69,9 +66,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Todo App</h1>
-              <p className="text-sm text-gray-500 mt-0.5">
-                Stay organized, one task at a time.
-              </p>
+              <p className="text-sm text-gray-500 mt-0.5">Stay organized, one task at a time.</p>
             </div>
           </div>
 
@@ -81,20 +76,8 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 {completedCount} done · {remaining} remaining
               </div>
             )}
-
-            <Button
-              label="Profile"
-              onClick={handleProfileClick}
-              variant="ghost"
-              icon={<User className="w-4 h-4" />}
-            />
-
-            <Button
-              label="Logout"
-              onClick={handleLogout}
-              variant="danger"
-              icon={<LogOut className="w-4 h-4" />}
-            />
+            <Button label="Profile" onClick={handleProfileClick} variant="ghost" icon={<User className="w-4 h-4" />} />
+            <Button label="Logout" onClick={handleLogout} variant="danger" icon={<LogOut className="w-4 h-4" />} />
           </div>
         </div>
       </header>
