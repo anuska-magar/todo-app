@@ -1,26 +1,17 @@
-// SubTodoList.jsx
 import { useState } from "react";
-import { Pencil, Trash2, ChevronDown, ChevronUp, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import Input from "./Input";
-import Button from "./Button";
 
-function SubTodoList({ 
-  subTodos, 
-  onAdd, 
-  onDelete, 
-  onToggle, 
-  onEdit,
-  onAddNested,
-  onDeleteNested,
-  onToggleNested,
-  onEditNested,
+function SubTodoList({
+  subTodos, onAdd, onDelete, onToggle, onEdit,
+  onAddNested, onDeleteNested, onToggleNested, onEditNested,
   level = 0
 }) {
   const [text, setText] = useState("");
   const [editId, setEditId] = useState(null);
   const [editText, setEditText] = useState("");
   const [expandedItems, setExpandedItems] = useState({});
-  const [showNestedInput, setShowNestedInput] = useState({});
+  const [showInputFor, setShowInputFor] = useState({});
 
   function handleAdd() {
     if (text.trim() === "") return;
@@ -31,177 +22,136 @@ function SubTodoList({
   function handleSaveEdit(id) {
     onEdit(id, editText);
     setEditId(null);
-    setEditText("");
   }
 
   function toggleExpand(id) {
-    setExpandedItems({
-      ...expandedItems,
-      [id]: !expandedItems[id]
-    });
+    setExpandedItems((prev) => ({ ...prev, [id]: !prev[id] }));
   }
-
-  function toggleNestedInput(id) {
-    setShowNestedInput({
-      ...showNestedInput,
-      [id]: !showNestedInput[id]
-    });
-  }
-
-  const getLevelColor = (level) => {
-    const colors = ['indigo', 'purple', 'pink', 'blue', 'green', 'orange', 'red', 'teal', 'cyan', 'rose'];
-    return colors[level % colors.length];
-  };
-
-  const color = getLevelColor(level);
-  const indentAmount = level * 16;
 
   return (
-    <div 
-      className="mt-3 space-y-2"
-      style={{ marginLeft: `${indentAmount}px` }}
-    >
-      {/* Render existing subtasks */}
+    <div className="mt-2 space-y-1">
       {subTodos.map((sub) => {
-        const hasChildren = sub.subTodos && sub.subTodos.length > 0;
+        const hasChildren = sub.subTodos?.length > 0;
         const isExpanded = expandedItems[sub.id];
-        const showInput = showNestedInput[sub.id];
-        const completedChildren = sub.subTodos?.filter(st => st.completed).length || 0;
-        const totalChildren = sub.subTodos?.length || 0;
+        const showInput = showInputFor[sub.id];
 
         return (
-          <div key={sub.id} className="space-y-1">
-            {/* Subtask Item */}
-            <div 
-              className={`flex items-center gap-3 bg-white rounded-xl px-4 py-2.5 
-                          border-l-4 transition-all duration-300 hover:shadow-sm
-                          ${sub.completed ? 'opacity-60' : ''}`}
-              style={{ borderColor: `var(--${color}-400)` }}
-            >
-              <input
-                type="checkbox"
-                checked={sub.completed}
-                onChange={() => onToggle(sub.id)}
-                className="w-4 h-4 accent-indigo-600 cursor-pointer"
-              />
+          <div key={sub.id}>
+            <div className="flex items-start gap-2" style={{ paddingLeft: `${level * 20}px` }}>
+              {/* Tree line */}
+              <div className="flex flex-col items-center pt-1 flex-shrink-0" style={{ width: "20px" }}>
+                <div className="w-px flex-1 bg-gray-300" style={{ minHeight: "20px" }} />
+              </div>
 
-              {editId === sub.id ? (
-                <div className="flex-1 flex items-center gap-2">
-                  <Input
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    placeholder="Edit subtask"
-                    className="flex-1"
-                  />
-                  <Button label="Save" onClick={() => handleSaveEdit(sub.id)} variant="primary" />
-                </div>
-              ) : (
-                <>
-                  <span
-                    className={`flex-1 text-sm font-medium ${
-                      sub.completed ? "line-through text-gray-400" : "text-gray-700"
-                    }`}
-                  >
-                    {sub.text}
-                  </span>
-                  
-                  {hasChildren && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                      {completedChildren}/{totalChildren}
-                    </span>
+              <div className="flex-1 flex items-center gap-2 py-2 px-3 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors">
+                {/* Circle checkbox */}
+                <button
+                  onClick={() => onToggle(sub.id)}
+                  className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
+                  style={{
+                    borderColor: sub.completed ? "#6b3f5e" : "#d4a8c4",
+                    backgroundColor: sub.completed ? "#6b3f5e" : "transparent"
+                  }}
+                >
+                  {sub.completed && (
+                    <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
                   )}
+                </button>
 
-                  {hasChildren && (
+                {editId === sub.id ? (
+                  <div className="flex-1 flex items-center gap-2">
+                    <Input value={editText} onChange={(e) => setEditText(e.target.value)} placeholder="Edit subtask" />
                     <button
-                      onClick={() => toggleExpand(sub.id)}
-                      className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                      onClick={() => handleSaveEdit(sub.id)}
+                      className="px-3 py-1 rounded-full text-xs text-white whitespace-nowrap"
+                      style={{ backgroundColor: "#6b3f5e" }}
                     >
-                      {isExpanded ? (
-                        <ChevronUp className="w-4 h-4 text-gray-500" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-500" />
-                      )}
+                      Save
                     </button>
-                  )}
-
-                  {/* ADD SUB BUTTON - Opens nested input */}
-                  <Button
-                    label="Add Sub"
-                    variant="ghost"
-                    icon={<Plus className="w-3.5 h-3.5" />}
-                    onClick={() => {
-                      toggleNestedInput(sub.id);
-                      // Expand to show children if there are any
-                      if (hasChildren && !isExpanded) {
-                        toggleExpand(sub.id);
-                      }
-                    }}
-                  />
-
-                  <Button
-                    label="Edit"
-                    variant="ghost"
-                    icon={<Pencil className="w-3.5 h-3.5" />}
-                    onClick={() => {
-                      setEditId(sub.id);
-                      setEditText(sub.text);
-                    }}
-                  />
-                  <Button
-                    label="Delete"
-                    variant="danger"
-                    icon={<Trash2 className="w-3.5 h-3.5" />}
-                    onClick={() => onDelete(sub.id)}
-                  />
-                </>
-              )}
+                  </div>
+                ) : (
+                  <>
+                    <span className={`flex-1 text-sm ${sub.completed ? "line-through text-gray-400" : "text-gray-700"}`}>
+                      {sub.text}
+                    </span>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        onClick={() => setShowInputFor((prev) => ({ ...prev, [sub.id]: !prev[sub.id] }))}
+                        className="p-1 text-gray-500 hover:text-gray-800 transition-colors"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => { setEditId(sub.id); setEditText(sub.text); }}
+                        className="p-1 text-gray-500 hover:text-gray-800 transition-colors"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => onDelete(sub.id)}
+                        className="p-1 text-red-400 hover:text-red-600 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      {hasChildren && (
+                        <button
+                          onClick={() => toggleExpand(sub.id)}
+                          className="p-1 text-gray-500 hover:text-gray-800 transition-colors"
+                        >
+                          {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
-            {/* Nested Input - Shows when "Add Sub" is clicked */}
+            {/* Nested input */}
             {showInput && (
-              <div 
-                className="flex items-center gap-2 bg-indigo-50/50 rounded-xl border border-indigo-200 p-2 mt-1 ml-8"
-                style={{ marginLeft: `${indentAmount + 16}px` }}
-              >
+              <div className="flex items-center gap-2 mt-1 rounded-xl bg-gray-100 px-3 py-2"
+                style={{ marginLeft: `${(level + 1) * 20 + 20}px` }}>
                 <Input
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder={`Add nested subtask...`}
-                  className="flex-1 text-sm"
+                  placeholder="Add nested subtask..."
                   onKeyPress={(e) => {
                     if (e.key === 'Enter' && text.trim()) {
                       onAddNested(sub.id, text);
                       setText("");
-                      setShowNestedInput({ ...showNestedInput, [sub.id]: false });
+                      setShowInputFor((prev) => ({ ...prev, [sub.id]: false }));
                     }
                   }}
                 />
-                <Button 
-                  label="Add" 
+                <button
                   onClick={() => {
                     if (text.trim()) {
                       onAddNested(sub.id, text);
                       setText("");
-                      setShowNestedInput({ ...showNestedInput, [sub.id]: false });
+                      setShowInputFor((prev) => ({ ...prev, [sub.id]: false }));
                     }
-                  }} 
-                  variant="primary"
-                  icon={<Plus className="w-3.5 h-3.5" />}
-                />
+                  }}
+                  className="px-3 py-1.5 rounded-full text-xs text-white whitespace-nowrap"
+                  style={{ backgroundColor: "#6b3f5e" }}
+                >
+                  Add
+                </button>
                 <button
-                  onClick={() => setShowNestedInput({ ...showNestedInput, [sub.id]: false })}
-                  className="text-gray-400 hover:text-gray-600 text-sm px-2"
+                  onClick={() => setShowInputFor((prev) => ({ ...prev, [sub.id]: false }))}
+                  className="text-xs text-gray-600 hover:text-gray-800 whitespace-nowrap"
                 >
                   Cancel
                 </button>
               </div>
             )}
 
-            {/* Render children (RECURSIVE) */}
+            {/* Recursive children */}
             {isExpanded && hasChildren && (
               <SubTodoList
                 subTodos={sub.subTodos}
-                onAdd={(text) => onAddNested(sub.id, text)}
+                onAdd={(t) => onAddNested(sub.id, t)}
                 onDelete={(childId) => onDeleteNested(sub.id, childId)}
                 onToggle={(childId) => onToggleNested(sub.id, childId)}
                 onEdit={(childId, newText) => onEditNested(sub.id, childId, newText)}
@@ -216,23 +166,22 @@ function SubTodoList({
         );
       })}
 
-      {/* Add new subtask input at current level */}
-      <div className="flex items-center gap-2 bg-gray-50 rounded-xl border border-gray-200 p-2 mt-2">
+      {/* Add subtask input */}
+      <div className="flex items-center gap-2 mt-2 rounded-xl bg-gray-100 px-3 py-2"
+        style={{ marginLeft: `${level * 20 + 20}px` }}>
         <Input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={
-            level === 0 ? "Add a subtask..." : `Add level ${level + 1} subtask...`
-          }
-          className="flex-1 text-sm"
+          placeholder={level === 0 ? "Add a subtask..." : "Add nested subtask..."}
           onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
         />
-        <Button 
-          label="Add" 
-          onClick={handleAdd} 
-          variant="primary"
-          icon={<Plus className="w-3.5 h-3.5" />}
-        />
+        <button
+          onClick={handleAdd}
+          className="px-3 py-1.5 rounded-full text-xs text-white whitespace-nowrap"
+          style={{ backgroundColor: "#6b3f5e" }}
+        >
+          Add
+        </button>
       </div>
     </div>
   );

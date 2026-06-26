@@ -3,18 +3,23 @@ import { useState, useEffect } from "react";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import { isLoggedIn } from "./utils/auth";
-
+import { account } from "./appwrite/config";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
-    isLoggedIn().then((result) => {
-      setLoggedIn(result);
+    async function checkAndClearSession() {
+      try {
+        await account.deleteSession("current");
+      } catch {
+        // no active session, that's fine
+      }
+      setLoggedIn(false);
       setLoading(false);
-    });
+    }
+    checkAndClearSession();
   }, []);
 
   if (loading) return <p>Loading...</p>;
@@ -25,7 +30,7 @@ function App() {
         path="/"
         element={loggedIn ? <HomePage /> : <Navigate to="/login" />}
       />
-      <Route path="/login" element={<Login setLoggedIn={setLoggedIn}/>} />
+      <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
       <Route path="/register" element={<Register />} />
     </Routes>
   );

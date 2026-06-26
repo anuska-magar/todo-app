@@ -1,28 +1,24 @@
-// TodoItem.jsx
 import { useState } from "react";
 import { Pencil, Trash2, ChevronDown, ChevronUp, Plus } from "lucide-react";
 import Input from "./Input";
-import Button from "./Button";
-import Badge from "./Badge";
 import SubTodoList from "./SubTodoList";
 
-function TodoItem({ 
-  todo, 
-  onDelete, 
-  onToggle, 
-  onEdit, 
-  onAddSub, 
-  onDeleteSub, 
-  onToggleSub, 
-  onEditSub,
-  onAddNestedSub,
-  onDeleteNestedSub,
-  onToggleNestedSub,
-  onEditNestedSub
+function TodoItem({
+  todo, onDelete, onToggle, onEdit,
+  onAddSub, onDeleteSub, onToggleSub, onEditSub,
+  onAddNestedSub, onDeleteNestedSub, onToggleNestedSub, onEditNestedSub
 }) {
   const [showSubs, setShowSubs] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
+
+  function handleToggle() {
+    if (!todo.completed) {
+      // marking complete — hide subtasks
+      setShowSubs(false);
+    }
+    onToggle(todo.id);
+  }
 
   function handleSave() {
     onEdit(todo.id, editText);
@@ -30,96 +26,92 @@ function TodoItem({
   }
 
   const totalSubs = todo.subTodos?.length || 0;
-  const completedSubs = todo.subTodos?.filter(s => s.completed).length || 0;
 
   return (
-    <div
-      className={`bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100
-                  p-5 mb-4 transition-all duration-300
-                  ${todo.completed ? "opacity-70" : ""}`}
-    >
-      <div className="flex items-center gap-3 flex-wrap">
-        <input
-          type="checkbox"
-          checked={todo.completed}
-          onChange={() => onToggle(todo.id)}
-          className="w-5 h-5 accent-indigo-600 cursor-pointer"
-        />
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div className="flex items-center gap-3 px-4 py-3.5">
+        <button
+          onClick={handleToggle}
+          className="w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200"
+          style={{
+            borderColor: todo.completed ? "#6b3f5e" : "#d4a8c4",
+            backgroundColor: todo.completed ? "#6b3f5e" : "transparent"
+          }}
+        >
+          {todo.completed && (
+            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+        </button>
 
         {isEditing ? (
-          <>
-            <Input
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              placeholder="Edit todo"
-            />
-            <Button label="Save" onClick={handleSave} />
-          </>
+          <div className="flex-1 flex items-center gap-2">
+            <Input value={editText} onChange={(e) => setEditText(e.target.value)} placeholder="Edit task" />
+            <button
+              onClick={handleSave}
+              className="px-3 py-1.5 rounded-full text-xs text-white whitespace-nowrap"
+              style={{ backgroundColor: "#6b3f5e" }}
+            >
+              Save
+            </button>
+          </div>
         ) : (
           <>
-            <span
-              className={`flex-1 text-base font-medium ${
-                todo.completed ? "line-through text-gray-400" : "text-gray-800"
-              }`}
-            >
+            <span className={`flex-1 text-sm ${todo.completed ? "line-through text-gray-400" : "text-gray-700"}`}>
               {todo.text}
             </span>
 
-            {todo.completed && <Badge text="Done" />}
-            
-            {totalSubs > 0 && (
-              <Badge text={`${completedSubs}/${totalSubs} subtasks`} />
-            )}
-
-            <Button
-              label="Edit"
-              variant="ghost"
-              icon={<Pencil className="w-3.5 h-3.5" />}
-              onClick={() => setIsEditing(true)}
-            />
-            <Button
-              label="Delete"
-              variant="danger"
-              icon={<Trash2 className="w-3.5 h-3.5" />}
-              onClick={() => onDelete(todo.id)}
-            />
+            <div className="flex items-center gap-1">
+              {!todo.completed && (
+                <button
+                  onClick={() => setShowSubs(true)}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                onClick={() => setIsEditing(true)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 transition-colors"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => onDelete(todo.id)}
+                className="p-1.5 rounded-lg text-red-300 hover:text-red-500 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+              {!todo.completed && totalSubs > 0 && (
+                <button
+                  onClick={() => setShowSubs(!showSubs)}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 transition-colors"
+                >
+                  {showSubs ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
+              )}
+            </div>
           </>
         )}
       </div>
 
-      {/* Subtask controls */}
-      <div className="flex items-center gap-2 mt-3 pl-8 flex-wrap">
-        {totalSubs > 0 && (
-          <Button
-            label={showSubs ? "Hide Subtasks" : `Show Subtasks (${totalSubs})`}
-            variant="ghost"
-            icon={showSubs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-            onClick={() => setShowSubs(!showSubs)}
+      {/* Subtasks — only shown when todo is NOT completed */}
+      {showSubs && !todo.completed && (
+        <div className="px-4 pb-3 border-t border-gray-100">
+          <SubTodoList
+            subTodos={todo.subTodos}
+            onAdd={(text) => onAddSub(todo.id, text)}
+            onDelete={(subId) => onDeleteSub(todo.id, subId)}
+            onToggle={(subId) => onToggleSub(todo.id, subId)}
+            onEdit={(subId, newText) => onEditSub(todo.id, subId, newText)}
+            onAddNested={(parentId, text) => onAddNestedSub(todo.id, parentId, text)}
+            onDeleteNested={(parentId, subId) => onDeleteNestedSub(todo.id, parentId, subId)}
+            onToggleNested={(parentId, subId) => onToggleNestedSub(todo.id, parentId, subId)}
+            onEditNested={(parentId, subId, newText) => onEditNestedSub(todo.id, parentId, subId, newText)}
+            level={0}
           />
-        )}
-        
-        <Button
-          label="+ Add Subtask"
-          variant="primary"
-          icon={<Plus className="w-3.5 h-3.5" />}
-          onClick={() => setShowSubs(true)}
-        />
-      </div>
-
-      {/* Subtask List */}
-      {showSubs && (
-        <SubTodoList
-          subTodos={todo.subTodos}
-          onAdd={(text) => onAddSub(todo.id, text)}
-          onDelete={(subId) => onDeleteSub(todo.id, subId)}
-          onToggle={(subId) => onToggleSub(todo.id, subId)}
-          onEdit={(subId, newText) => onEditSub(todo.id, subId, newText)}
-          onAddNested={(parentId, text) => onAddNestedSub(todo.id, parentId, text)}
-          onDeleteNested={(parentId, subId) => onDeleteNestedSub(todo.id, parentId, subId)}
-          onToggleNested={(parentId, subId) => onToggleNestedSub(todo.id, parentId, subId)}
-          onEditNested={(parentId, subId, newText) => onEditNestedSub(todo.id, parentId, subId, newText)}
-          level={0}
-        />
+        </div>
       )}
     </div>
   );

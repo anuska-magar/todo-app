@@ -8,6 +8,8 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    open: true
+    open: true,  // Auto-open browser
+    host: process.env.VITE_HOST || '0.0.0.0',  // Network access
+    port: parseInt(process.env.VITE_PORT) || 5173,  // Port
   }
 })

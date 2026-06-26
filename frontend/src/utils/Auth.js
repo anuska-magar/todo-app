@@ -60,3 +60,27 @@ export async function getCurrentUser() {
     return null;
   }
 }
+
+export async function updateUserName(name) {
+  try {
+    const updatedAccount = await account.updateName(name);
+    await databases.updateDocument(DB_ID, USERS_COLLECTION_ID, updatedAccount.$id, {
+      username: name,
+    });
+    return { success: true, message: "Name updated successfully!" };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+export async function updateUserEmail(newEmail, currentPassword) {
+  try {
+    const updatedAccount = await account.updateEmail(newEmail, currentPassword);
+    await databases.updateDocument(DB_ID, USERS_COLLECTION_ID, updatedAccount.$id, {
+      email: newEmail,
+    });
+    return { success: true, message: "Email updated successfully!" };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
