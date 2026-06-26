@@ -20,7 +20,7 @@ export const createTask = async (taskData) => {
     );
     return { success: true, data: response };
   } catch (error) {
-    return { success: false, error: error.message };
+    return  response;
   }
 };
 
@@ -28,48 +28,18 @@ export const createTask = async (taskData) => {
 export const getUserTasks = async (userId) => {
   try {
     const response = await databases.listDocuments(
-      DB_ID, 
-      TASKS_COLLECTION_ID, 
+      DB_ID,
+      TASKS_COLLECTION_ID,
       [
         Query.equal("userId", userId),
         Query.orderDesc("$createdAt")
       ]
     );
-    
-    // Build task tree with subtasks
-    const tasks = response.documents;
-    const taskMap = {};
-    const mainTasks = [];
 
-    // First pass: create map of all tasks
-    tasks.forEach(task => {
-      taskMap[task.$id] = {
-        id: task.$id,
-        text: task.taskName,
-        completed: task.is_completed,
-        priority: task.priority,
-        description: task.description,
-        parentId: task.parentId,
-        subTodos: [],
-        createdAt: task.$createdAt,
-        updatedAt: task.$updatedAt
-      };
-    });
-
-    // Second pass: build tree
-    tasks.forEach(task => {
-      if (task.parentId && taskMap[task.parentId]) {
-        // This is a subtask - add to parent's subTodos
-        taskMap[task.parentId].subTodos.push(taskMap[task.$id]);
-      } else if (!task.parentId) {
-        // This is a main task
-        mainTasks.push(taskMap[task.$id]);
-      }
-    });
-
-    return { success: true, data: mainTasks };
+    // Return the Appwrite response directly
+    return response;
   } catch (error) {
-    return { success: false, error: error.message };
+    throw error;
   }
 };
 
@@ -92,7 +62,7 @@ export const updateTask = async (taskId, updatedFields) => {
     );
     return { success: true, data: response };
   } catch (error) {
-    return { success: false, error: error.message };
+    return response;
   }
 };
 
@@ -113,7 +83,7 @@ export const deleteTask = async (taskId) => {
 
     // Then delete the main task
     await databases.deleteDocument(DB_ID, TASKS_COLLECTION_ID, taskId);
-    return { success: true };
+    return true;
   } catch (error) {
     return { success: false, error: error.message };
   }

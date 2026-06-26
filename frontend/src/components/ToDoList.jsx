@@ -23,7 +23,9 @@ function TodoList({ onCountChange }) {
       setUserId(user.$id);
       try {
         const res = await getUserTasks(user.$id);
-        setTodos(res.documents);
+        console.log(res);
+        console.log(res.documents);
+        setTodos(res.documents ?? []);
       } catch (err) {
         console.error(err);
         setError("Couldn't load your tasks. Please refresh.");
@@ -43,8 +45,11 @@ function TodoList({ onCountChange }) {
 
   // --- Tree helpers (derive nesting from flat parentId list) ---
   function getChildren(parentId) {
-    return todos.filter((t) => t.parentId === parentId);
-  }
+  return todos.filter(
+    t =>
+      (t.parentId ?? "") === (parentId ?? "")
+  );
+}
 
   function getAllDescendantIds(taskId) {
     const direct = todos.filter((t) => t.parentId === taskId);
