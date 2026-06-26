@@ -344,14 +344,14 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                       <p className="text-xl font-bold" style={{ color: "#18181b" }}>{totalCount}</p>
                       <p className="text-xs text-gray-400">Total</p>
                     </div>
-                    <div className="text-center p-3 bg-green-50 rounded-xl">
-                      <p className="text-xl font-bold text-green-600">{completedCount}</p>
-                      <p className="text-xs text-gray-400">Done</p>
-                    </div>
-                    <div className="text-center p-3 bg-orange-50 rounded-xl">
-                      <p className="text-xl font-bold text-orange-500">{totalCount - completedCount}</p>
-                      <p className="text-xs text-gray-400">Pending</p>
-                    </div>
+                  <div className="text-center p-3 rounded-xl" style={{ backgroundColor: "#f0ebf7" }}>
+  <p className="text-xl font-bold" style={{ color: "#7c3aed" }}>{completedCount}</p>
+  <p className="text-xs text-gray-400">Done</p>
+</div>
+<div className="text-center p-3 rounded-xl" style={{ backgroundColor: "#fce8f0" }}>
+  <p className="text-xl font-bold" style={{ color: "#db2777" }}>{totalCount - completedCount}</p>
+  <p className="text-xs text-gray-400">Pending</p>
+</div>
                   </div>
                 </div>
               )}
