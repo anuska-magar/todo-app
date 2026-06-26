@@ -24,10 +24,10 @@ function Profile({ user, totalCount = 0, completedCount = 0 }) {
     <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-white/60 p-6 mb-6 transition-all hover:shadow-md">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         {/* Avatar */}
-        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-4 rounded-xl shadow-lg">
+        <div className="p-4 rounded-xl shadow-lg" style={{ backgroundColor: "#18181b" }}>
           <User className="w-10 h-10 text-white" />
         </div>
-        
+
         {/* User Info */}
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
@@ -35,12 +35,12 @@ function Profile({ user, totalCount = 0, completedCount = 0 }) {
               {user.name}
             </h2>
             {user.role && (
-              <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full">
+              <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full">
                 {user.role}
               </span>
             )}
           </div>
-          
+
           <div className="mt-1.5 space-y-1">
             <div className="flex items-center gap-2 text-gray-600">
               <Mail className="w-3.5 h-3.5 text-gray-400" />

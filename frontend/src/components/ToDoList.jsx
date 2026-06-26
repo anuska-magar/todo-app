@@ -528,7 +528,7 @@ function TodoList({ onCountChange }) {
         <button
           onClick={addTodo}
           className="px-5 py-3 rounded-full text-sm font-medium text-white whitespace-nowrap transition-all hover:opacity-90 active:scale-95"
-          style={{ backgroundColor: "#6b3f5e" }}
+          style={{ backgroundColor: "#18181b" }}
         >
           Add Task
         </button>
@@ -548,9 +548,9 @@ function TodoList({ onCountChange }) {
         <div className="flex flex-col items-center justify-center text-center py-20">
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-            style={{ backgroundColor: "#f3e8ef" }}
+            style={{ backgroundColor: "#f4f4f5" }}
           >
-            <ClipboardCheck className="w-8 h-8" style={{ color: "#6b3f5e" }} />
+            <ClipboardCheck className="w-8 h-8" style={{ color: "#27272a" }} />
           </div>
           <p className="text-base font-medium text-gray-600">No todos yet.</p>
           <p className="text-sm text-gray-500 mt-1">Add your first task above to get started.</p>

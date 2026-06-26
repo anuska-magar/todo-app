@@ -50,18 +50,18 @@ function Register() {
   const passwordError = confirmPassword && !passwordsMatch;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "#fdf6f0" }}>
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "#fafafa" }}>
       <div className="w-full max-w-sm bg-white rounded-3xl shadow-sm p-8">
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#2d2d2d" }}>
+          <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#18181b" }}>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 leading-tight">Create Account</h1>
+            <h1 className="text-2xl font-bold text-gray-900 leading-tight">Create Account</h1>
             <p className="text-xs text-gray-400">Sign up to start organizing your tasks.</p>
           </div>
         </div>
@@ -75,7 +75,7 @@ function Register() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-3 rounded-full text-sm text-gray-700 placeholder-gray-400 border-0 focus:outline-none focus:ring-2 transition-all"
-              style={{ backgroundColor: "#f3f0ee" }}
+              style={{ backgroundColor: "#f4f4f5" }}
             />
           </div>
 
@@ -87,7 +87,7 @@ function Register() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 rounded-full text-sm text-gray-700 placeholder-gray-400 border-0 focus:outline-none focus:ring-2 transition-all"
-              style={{ backgroundColor: "#f3f0ee" }}
+              style={{ backgroundColor: "#f4f4f5" }}
             />
           </div>
 
@@ -100,7 +100,7 @@ function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-full text-sm text-gray-700 placeholder-gray-400 border-0 focus:outline-none focus:ring-2 transition-all pr-11"
-                style={{ backgroundColor: "#f3f0ee" }}
+                style={{ backgroundColor: "#f4f4f5" }}
               />
               <button
                 type="button"
@@ -121,7 +121,7 @@ function Register() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-full text-sm text-gray-700 placeholder-gray-400 border-0 focus:outline-none focus:ring-2 transition-all pr-11"
-                style={{ backgroundColor: "#f3f0ee" }}
+                style={{ backgroundColor: "#f4f4f5" }}
               />
               <button
                 type="button"
@@ -143,7 +143,7 @@ function Register() {
             onClick={handleSubmit}
             disabled={loading}
             className="w-full py-3 rounded-full text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 mt-2"
-            style={{ backgroundColor: "#6b3f5e" }}
+            style={{ backgroundColor: "#18181b" }}
           >
             {loading ? "Registering..." : "Register"}
           </button>
@@ -151,7 +151,7 @@ function Register() {
 
         <p className="text-sm text-center text-gray-400 mt-6">
           Already have an account?{" "}
-          <Link to="/login" className="font-bold text-gray-700 hover:underline">Log In →</Link>
+          <Link to="/login" className="font-bold text-gray-700 hover:underline">Log In </Link>
         </p>
       </div>
 
@@ -162,7 +162,7 @@ function Register() {
             <div className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-gray-800">Registration Successful!</p>
+                <p className="text-sm font-semibold text-gray-900">Registration Successful!</p>
                 <p className="text-xs text-gray-400 mt-0.5">Please login to continue.</p>
               </div>
               <button onClick={() => setShowPopup(false)}>
