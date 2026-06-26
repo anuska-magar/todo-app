@@ -1,25 +1,33 @@
-// Button.jsx
-// A small reusable button used anywhere in the app (add, delete, save, cancel)
-// variant controls the color theme: "primary" (default), "danger", or "ghost"
-
-function Button({ label, onClick, variant = "primary", icon }) {
+function Button({ label, onClick, variant = "primary", icon, fullWidth = false, disabled = false }) {
   const baseClasses =
-    "inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium " +
-    "transition-all duration-300 hover:scale-105 active:scale-95";
+    "inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap " +
+    "transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variantClasses = {
-    primary:
-      "bg-black text-white shadow-sm hover:shadow-md",
-    danger:
-      "bg-red-50 text-red-600 hover:bg-red-100",
-    ghost:
-      "bg-gray-100 text-gray-600 hover:bg-gray-200",
+    primary: "text-white" ,
+    danger: "bg-transparent text-red-400 hover:text-red-600",
+    ghost: "bg-transparent text-gray-400 hover:text-gray-600",
   };
+
+  if (variant === "primary") {
+    return (
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        style={{ backgroundColor: "#6b3f5e" }}
+        className={`${baseClasses} text-white hover:opacity-90 ${fullWidth ? "w-full" : ""}`}
+      >
+        {icon}
+        {label}
+      </button>
+    );
+  }
 
   return (
     <button
       onClick={onClick}
-      className={`${baseClasses} ${variantClasses[variant]}`}
+      disabled={disabled}
+      className={`${baseClasses} ${variantClasses[variant]} ${fullWidth ? "w-full" : ""}`}
     >
       {icon}
       {label}
