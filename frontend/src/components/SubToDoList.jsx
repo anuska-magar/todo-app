@@ -49,8 +49,8 @@ function SubTodoList({
                   onClick={() => onToggle(sub.id)}
                   className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
                   style={{
-                    borderColor: sub.completed ? "#6b3f5e" : "#d4a8c4",
-                    backgroundColor: sub.completed ? "#6b3f5e" : "transparent"
+                    borderColor: sub.completed ? "#18181b" : "#d4d4d8",
+                    backgroundColor: sub.completed ? "#18181b" : "transparent"
                   }}
                 >
                   {sub.completed && (
@@ -66,7 +66,7 @@ function SubTodoList({
                     <button
                       onClick={() => handleSaveEdit(sub.id)}
                       className="px-3 py-1 rounded-full text-xs text-white whitespace-nowrap"
-                      style={{ backgroundColor: "#6b3f5e" }}
+                      style={{ backgroundColor: "#18181b" }}
                     >
                       Save
                     </button>
@@ -134,7 +134,7 @@ function SubTodoList({
                     }
                   }}
                   className="px-3 py-1.5 rounded-full text-xs text-white whitespace-nowrap"
-                  style={{ backgroundColor: "#6b3f5e" }}
+                  style={{ backgroundColor: "#18181b" }}
                 >
                   Add
                 </button>
@@ -178,7 +178,7 @@ function SubTodoList({
         <button
           onClick={handleAdd}
           className="px-3 py-1.5 rounded-full text-xs text-white whitespace-nowrap"
-          style={{ backgroundColor: "#6b3f5e" }}
+          style={{ backgroundColor: "#18181b" }}
         >
           Add
         </button>

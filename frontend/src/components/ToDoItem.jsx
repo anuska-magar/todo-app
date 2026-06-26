@@ -34,8 +34,8 @@ function TodoItem({
           onClick={handleToggle}
           className="w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200"
           style={{
-            borderColor: todo.completed ? "#6b3f5e" : "#d4a8c4",
-            backgroundColor: todo.completed ? "#6b3f5e" : "transparent"
+            borderColor: todo.completed ? "#18181b" : "#d4d4d8",
+            backgroundColor: todo.completed ? "#18181b" : "transparent"
           }}
         >
           {todo.completed && (
@@ -51,7 +51,7 @@ function TodoItem({
             <button
               onClick={handleSave}
               className="px-3 py-1.5 rounded-full text-xs text-white whitespace-nowrap"
-              style={{ backgroundColor: "#6b3f5e" }}
+              style={{ backgroundColor: "#18181b" }}
             >
               Save
             </button>

@@ -32,19 +32,19 @@ function Login({ setLoggedIn }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "#fdf6f0" }}>
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "#fafafa" }}>
       <div className="w-full max-w-sm bg-white rounded-3xl shadow-sm p-8">
 
         {/* Avatar icon */}
         <div className="flex justify-center mb-5">
-          <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: "#2d2d2d" }}>
+          <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: "#18181b" }}>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-1">Welcome Back</h1>
+        <h1 className="text-2xl font-bold text-center text-gray-900 mb-1">Welcome Back</h1>
         <p className="text-sm text-center text-gray-400 mb-7">Log in to access your todos.</p>
 
         <div className="space-y-4">
@@ -56,7 +56,7 @@ function Login({ setLoggedIn }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 rounded-full text-sm text-gray-700 placeholder-gray-400 border-0 focus:outline-none focus:ring-2 transition-all"
-              style={{ backgroundColor: "#f3f0ee", focusRingColor: "#6b3f5e" }}
+              style={{ backgroundColor: "#f4f4f5", focusRingColor: "#18181b" }}
               onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
             />
           </div>
@@ -70,7 +70,7 @@ function Login({ setLoggedIn }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-full text-sm text-gray-700 placeholder-gray-400 border-0 focus:outline-none focus:ring-2 transition-all pr-11"
-                style={{ backgroundColor: "#f3f0ee" }}
+                style={{ backgroundColor: "#f4f4f5" }}
                 onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
               />
               <button
@@ -91,7 +91,7 @@ function Login({ setLoggedIn }) {
             onClick={handleSubmit}
             disabled={loading}
             className="w-full py-3 rounded-full text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 mt-2"
-            style={{ backgroundColor: "#6b3f5e" }}
+            style={{ backgroundColor: "#18181b" }}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -110,7 +110,7 @@ function Login({ setLoggedIn }) {
             <div className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-gray-800">Login Successful!</p>
+                <p className="text-sm font-semibold text-gray-900">Login Successful!</p>
                 <p className="text-xs text-gray-400 mt-0.5">Welcome back!</p>
               </div>
               <button onClick={() => setShowPopup(false)}>

@@ -113,10 +113,10 @@ function Header({ totalCount = 0, completedCount = 0 }) {
             {/* Logo */}
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: "#6b3f5e" }}>
+                style={{ backgroundColor: "#18181b" }}>
                 <CheckCircle className="w-4.5 h-4.5 text-white" />
               </div>
-              <span className="text-lg font-bold text-gray-800 tracking-tight">Todo App</span>
+              <span className="text-lg font-bold text-gray-900 tracking-tight">Todo App</span>
             </div>
 
             {/* Right side: identity + actions */}
@@ -127,7 +127,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 className="flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-full hover:bg-gray-50 transition-all"
               >
                 <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-sm flex-shrink-0"
-                  style={{ backgroundColor: "#6b3f5e" }}>
+                  style={{ backgroundColor: "#18181b" }}>
                   <span className="text-white text-sm font-semibold">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
@@ -162,7 +162,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mb-4">
                   <LogOut className="w-6 h-6 text-red-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-1">Log out?</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Log out?</h3>
                 <p className="text-gray-500 text-sm">Are you sure you want to logout?</p>
               </div>
             </div>
@@ -176,7 +176,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
               <button
                 onClick={confirmLogout}
                 className="px-4 py-2 rounded-full text-sm text-white transition-all hover:opacity-90"
-                style={{ backgroundColor: "#6b3f5e" }}
+                style={{ backgroundColor: "#18181b" }}
               >
                 Logout
               </button>
@@ -192,7 +192,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
             <div className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-gray-800">Logged out successfully!</p>
+                <p className="text-sm font-semibold text-gray-900">Logged out successfully!</p>
                 <p className="text-xs text-gray-400 mt-0.5">See you next time.</p>
               </div>
               <button onClick={() => setShowLogoutSuccess(false)}>
@@ -208,7 +208,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden animate-fadeIn">
             <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-800">Profile</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Profile</h3>
               <button
                 onClick={() => {
                   setShowProfileModal(false);
@@ -223,12 +223,12 @@ function Header({ totalCount = 0, completedCount = 0 }) {
             <div className="p-6">
               <div className="flex flex-col items-center mb-6">
                 <div className="w-20 h-20 rounded-full flex items-center justify-center shadow-md"
-                  style={{ backgroundColor: "#6b3f5e" }}>
+                  style={{ backgroundColor: "#18181b" }}>
                   <span className="text-white text-3xl font-semibold">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
-                <h2 className="text-xl font-semibold text-gray-800 mt-3">{user.name}</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mt-3">{user.name}</h2>
                 <span className="text-xs text-gray-400 mt-1">{user.role}</span>
               </div>
 
@@ -236,8 +236,8 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 {/* Full Name row */}
                 <div className="p-3 bg-gray-50 rounded-xl">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg" style={{ backgroundColor: "#f3e8ef" }}>
-                      <User className="w-4 h-4" style={{ color: "#6b3f5e" }} />
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: "#f4f4f5" }}>
+                      <User className="w-4 h-4" style={{ color: "#27272a" }} />
                     </div>
 
                     {editingField === "name" ? (
@@ -248,7 +248,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                           onChange={(e) => setNameInput(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && saveName()}
                           autoFocus
-                          className="flex-1 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg px-2 py-1 outline-none focus:border-[#6b3f5e]"
+                          className="flex-1 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg px-2 py-1 outline-none focus:border-[#18181b]"
                         />
                         <button onClick={saveName} disabled={saving} className="p-1.5 rounded-lg hover:bg-green-50 text-green-600 disabled:opacity-50">
                           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
@@ -277,8 +277,8 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 {/* Email row */}
                 <div className="p-3 bg-gray-50 rounded-xl">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg" style={{ backgroundColor: "#f3e8ef" }}>
-                      <Mail className="w-4 h-4" style={{ color: "#6b3f5e" }} />
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: "#f4f4f5" }}>
+                      <Mail className="w-4 h-4" style={{ color: "#27272a" }} />
                     </div>
 
                     {editingField === "email" ? (
@@ -290,7 +290,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                             onChange={(e) => setEmailInput(e.target.value)}
                             placeholder="New email"
                             autoFocus
-                            className="flex-1 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg px-2 py-1 outline-none focus:border-[#6b3f5e]"
+                            className="flex-1 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg px-2 py-1 outline-none focus:border-[#18181b]"
                           />
                           <button onClick={saveEmail} disabled={saving} className="p-1.5 rounded-lg hover:bg-green-50 text-green-600 disabled:opacity-50">
                             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
@@ -305,7 +305,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                           onChange={(e) => setPasswordInput(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && saveEmail()}
                           placeholder="Current password (required to confirm)"
-                          className="text-sm text-gray-700 bg-white border border-gray-200 rounded-lg px-2 py-1 outline-none focus:border-[#6b3f5e]"
+                          className="text-sm text-gray-700 bg-white border border-gray-200 rounded-lg px-2 py-1 outline-none focus:border-[#18181b]"
                         />
                       </div>
                     ) : (
@@ -326,8 +326,8 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 </div>
 
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                  <div className="p-2 rounded-lg" style={{ backgroundColor: "#f3e8ef" }}>
-                    <Calendar className="w-4 h-4" style={{ color: "#6b3f5e" }} />
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: "#f4f4f5" }}>
+                    <Calendar className="w-4 h-4" style={{ color: "#27272a" }} />
                   </div>
                   <div>
                     <p className="text-xs text-gray-400">Member Since</p>
@@ -340,8 +340,8 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                 <div className="mt-5 pt-5 border-t border-gray-100">
                   <p className="text-xs font-medium text-gray-400 mb-3 uppercase tracking-wide">Task Stats</p>
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="text-center p-3 rounded-xl" style={{ backgroundColor: "#f3e8ef" }}>
-                      <p className="text-xl font-bold" style={{ color: "#6b3f5e" }}>{totalCount}</p>
+                    <div className="text-center p-3 rounded-xl" style={{ backgroundColor: "#f4f4f5" }}>
+                      <p className="text-xl font-bold" style={{ color: "#18181b" }}>{totalCount}</p>
                       <p className="text-xs text-gray-400">Total</p>
                     </div>
                     <div className="text-center p-3 bg-green-50 rounded-xl">

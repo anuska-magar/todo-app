@@ -6,7 +6,7 @@ function Badge({ text }) {
 
   const colorClasses = isDone
     ? "bg-green-100 text-green-700"
-    : "bg-indigo-50 text-indigo-600";
+    : "bg-gray-100 text-gray-700";
 
   return (
     <span

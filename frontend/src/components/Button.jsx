@@ -14,7 +14,7 @@ function Button({ label, onClick, variant = "primary", icon, fullWidth = false, 
       <button
         onClick={onClick}
         disabled={disabled}
-        style={{ backgroundColor: "#6b3f5e" }}
+        style={{ backgroundColor: "#18181b" }}
         className={`${baseClasses} text-white hover:opacity-90 ${fullWidth ? "w-full" : ""}`}
       >
         {icon}
