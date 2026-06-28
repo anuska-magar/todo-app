@@ -26,6 +26,7 @@ function TodoList({ onCountChange }) {
         console.log(res);
         console.log(res.documents);
         setTodos(res.documents ?? []);
+      console.log(JSON.stringify(res.documents, null, 2));
       } catch (err) {
         console.error(err);
         setError("Couldn't load your tasks. Please refresh.");
@@ -175,18 +176,35 @@ function TodoList({ onCountChange }) {
   }
 
   // --- Build a nested tree (for rendering only) from the flat list ---
-  function buildTree(parentId) {
-    return getChildren(parentId).map((task) => ({
+  function buildTree(parentId, path = []) {
+  console.log("Building:", parentId);
+
+  const children = getChildren(parentId);
+
+  return children.map(task => {
+    if (path.includes(task.$id)) {
+      console.error("CYCLE FOUND!");
+      console.log("Current path:", path);
+      console.log("Current task:", task);
+      return {
+        ...task,
+        id: task.$id,
+        text: task.taskName,
+        completed: task.is_completed,
+        subTodos: [],
+      };
+    }
+
+    return {
       ...task,
-      // map Appwrite field names back to what TodoItem expects
       id: task.$id,
       text: task.taskName,
       completed: task.is_completed,
-      subTodos: buildTree(task.$id),
-    }));
-  }
-
-  const topLevelTodos = buildTree("");
+      subTodos: buildTree(task.$id, [...path, task.$id]),
+    };
+  });
+}
+  const topLevelTodos = buildTree(null);
 
   if (loading) {
     return (

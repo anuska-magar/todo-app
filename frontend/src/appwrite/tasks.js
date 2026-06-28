@@ -4,24 +4,21 @@ import { ID, Query } from "appwrite";
 
 // Create a new task
 export const createTask = async (taskData) => {
-  try {
-    const response = await databases.createDocument(
-      DB_ID, 
-      TASKS_COLLECTION_ID, 
-      ID.unique(), 
-      {
-        taskName: taskData.taskName,
-        is_completed: false,
-        userId: taskData.userId,
-        priority: taskData.priority || "medium",
-        description: taskData.description || "",
-        parentId: taskData.parentId || null, // null for main tasks
-      }
-    );
-    return { success: true, data: response };
-  } catch (error) {
-    return  response;
-  }
+  const response = await databases.createDocument(
+    DB_ID,
+    TASKS_COLLECTION_ID,
+    ID.unique(),
+    {
+      taskName: taskData.taskName,
+      is_completed: false,
+      userId: taskData.userId,
+      priority: taskData.priority || "medium",
+      description: taskData.description || "",
+      parentId: taskData.parentId || null,
+    }
+  );
+
+  return response;   // ✅ return the document directly
 };
 
 // Get all tasks for a user (including subtasks)
@@ -60,9 +57,9 @@ export const updateTask = async (taskId, updatedFields) => {
       taskId, 
       dbFields
     );
-    return { success: true, data: response };
-  } catch (error) {
     return response;
+  } catch (error) {
+    throw error ;
   }
 };
 
@@ -85,7 +82,7 @@ export const deleteTask = async (taskId) => {
     await databases.deleteDocument(DB_ID, TASKS_COLLECTION_ID, taskId);
     return true;
   } catch (error) {
-    return { success: false, error: error.message };
+    throw error;
   }
 };
 
