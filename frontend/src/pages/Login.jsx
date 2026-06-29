@@ -22,7 +22,7 @@ function Login({ setLoggedIn }) {
     setError("");
     const result = await loginUser(email, password);
     if (result.success) {
-      setLoggedIn(true);
+      setLoggedIn(true); // This will update the state in App.jsx
       setShowPopup(true);
       setTimeout(() => navigate("/"), 800);
     } else {
