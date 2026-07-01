@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ClipboardCheck, Loader2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ClipboardCheck, Loader2, CheckCircle, AlertCircle, X } from "lucide-react";
 import Input from "./Input";
 import TodoItem from "./TodoItem";
 import { getCurrentUser } from "../utils/auth";
@@ -10,7 +10,20 @@ function TodoList({ onCountChange }) {
   const [text, setText] = useState("");
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [toast, setToast] = useState(null);
+  const toastTimerRef = useRef(null);
+
+  function showToast(type, title, message) {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+
+    setToast({ type, title, message });
+    toastTimerRef.current = setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+    }, 2800);
+  }
 
   // --- Load current user, then their tasks ---
   useEffect(() => {
@@ -29,12 +42,20 @@ function TodoList({ onCountChange }) {
       console.log(JSON.stringify(res.documents, null, 2));
       } catch (err) {
         console.error(err);
-        setError("Couldn't load your tasks. Please refresh.");
+        showToast("error", "Failed to load tasks", "Please refresh and try again.");
       } finally {
         setLoading(false);
       }
     }
     load();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
   }, []);
 
   // --- Report counts up to parent (Header stats) ---
@@ -63,7 +84,16 @@ function TodoList({ onCountChange }) {
 
   // --- Add a top-level task ---
   async function addTodo() {
-    if (text.trim() === "" || !userId) return;
+    if (text.trim() === "") {
+      showToast("error", "Task is empty", "Please enter a task before adding it.");
+      return;
+    }
+
+    if (!userId) {
+      showToast("error", "Unable to add task", "Please sign in again and try.");
+      return;
+    }
+
     const taskName = text.trim();
     setText("");
 
@@ -83,10 +113,11 @@ function TodoList({ onCountChange }) {
     try {
       const created = await createTask({ taskName, userId, parentId: "" });
       setTodos((prev) => prev.map((t) => (t.$id === tempId ? created : t)));
+      showToast("success", "Task added", "Your new task was added successfully.");
     } catch (err) {
       console.error(err);
       setTodos((prev) => prev.filter((t) => t.$id !== tempId));
-      setError("Couldn't add task. Please try again.");
+      showToast("error", "Couldn't add task", "Please try again.");
     }
   }
 
@@ -113,7 +144,7 @@ function TodoList({ onCountChange }) {
     } catch (err) {
       console.error(err);
       setTodos((prev) => prev.filter((t) => t.$id !== tempId));
-      setError("Couldn't add sub-task. Please try again.");
+      showToast("error", "Couldn't add sub-task", "Please try again.");
     }
   }
 
@@ -135,10 +166,13 @@ function TodoList({ onCountChange }) {
       await Promise.all(
         affectedIds.map((taskId) => updateTask(taskId, { is_completed: newCompleted }))
       );
+      if (newCompleted) {
+        showToast("success", "Task completed", "Nice work finishing this task.");
+      }
     } catch (err) {
       console.error(err);
       setTodos(previousTodos); // rollback
-      setError("Couldn't update task. Please try again.");
+      showToast("error", "Couldn't update task", "Please try again.");
     }
   }
 
@@ -154,7 +188,7 @@ function TodoList({ onCountChange }) {
     } catch (err) {
       console.error(err);
       setTodos(previousTodos);
-      setError("Couldn't save changes. Please try again.");
+      showToast("error", "Couldn't save changes", "Please try again.");
     }
   }
 
@@ -171,7 +205,7 @@ function TodoList({ onCountChange }) {
     } catch (err) {
       console.error(err);
       setTodos(previousTodos); // rollback
-      setError("Couldn't delete task. Please try again.");
+      showToast("error", "Couldn't delete task", "Please try again.");
     }
   }
 
@@ -233,14 +267,34 @@ function TodoList({ onCountChange }) {
         </button>
       </div>
 
-      {error && (
-        <div className="mb-4 px-4 py-2 rounded-xl bg-red-50 text-red-600 text-sm flex justify-between items-center">
-          <span>{error}</span>
-          <button onClick={() => setError("")} className="text-red-400 hover:text-red-600 text-xs font-medium">
-            Dismiss
-          </button>
+      {toast && (
+        <div className="fixed top-4 right-4 z-50 animate-slideIn">
+          <div className="bg-white border border-gray-100 rounded-2xl shadow-lg p-4 w-72">
+            <div className="flex items-start gap-3">
+              {toast.type === "success" ? (
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+              ) : (
+                <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+              )}
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-900">{toast.title}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{toast.message}</p>
+              </div>
+              <button onClick={() => setToast(null)}>
+                <X className="w-4 h-4 text-gray-300 hover:text-gray-500" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateX(100px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slideIn { animation: slideIn 0.3s ease-out; }
+      `}</style>
 
       {topLevelTodos.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center py-20">
