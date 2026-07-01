@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pencil, Trash2, ChevronDown, ChevronUp, Plus } from "lucide-react";
+import { Pencil, Trash2, ChevronDown, ChevronUp, Plus, ListChecks } from "lucide-react";
 import Input from "./Input";
 import SubTodoList from "./SubTodoList";
 
@@ -25,7 +25,19 @@ function TodoItem({
     setIsEditing(false);
   }
 
-  const totalSubs = todo.subTodos?.length || 0;
+  // Recursive function to count all subtasks
+  function countAllSubTasks(subTodos) {
+    if (!subTodos || subTodos.length === 0) return 0;
+    let count = subTodos.length;
+    subTodos.forEach(sub => {
+      if (sub.subTodos && sub.subTodos.length > 0) {
+        count += countAllSubTasks(sub.subTodos);
+      }
+    });
+    return count;
+  }
+
+  const totalSubs = countAllSubTasks(todo.subTodos);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -63,6 +75,21 @@ function TodoItem({
             </span>
 
             <div className="flex items-center gap-1">
+              {/* Subtask Count Badge */}
+              {!todo.completed && totalSubs > 0 && (
+                <button
+                  onClick={() => setShowSubs(!showSubs)}
+                  className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors"
+                  style={{
+                    backgroundColor: showSubs ? "#d4d4d8" : "#e4e4e7",
+                    color: "#18181b"
+                  }}
+                >
+                  <ListChecks className="w-3.5 h-3.5" />
+                  <span>{totalSubs}</span>
+                </button>
+              )}
+
               {!todo.completed && (
                 <button
                   onClick={() => setShowSubs(true)}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pencil, Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Pencil, Trash2, Plus, ChevronDown, ChevronUp, ListChecks } from "lucide-react";
 import Input from "./Input";
 
 function SubTodoList({
@@ -28,12 +28,20 @@ function SubTodoList({
     setExpandedItems((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
+  // Count direct children only for the badge
+  function countDirectChildren(subTodos) {
+    return subTodos ? subTodos.length : 0;
+  }
+
   return (
     <div className="mt-2 space-y-1">
       {subTodos.map((sub) => {
-        const hasChildren = sub.subTodos?.length > 0;
-        const isExpanded = expandedItems[sub.id];
-        const showInput = showInputFor[sub.id];
+        const children = sub.subTodos || [];
+        const hasChildren = children.length > 0;
+        const isExpanded = expandedItems[sub.id] || false;
+        const showInput = showInputFor[sub.id] || false;
+        // Count direct children only
+        const childCount = countDirectChildren(children);
 
         return (
           <div key={sub.id}>
@@ -77,6 +85,21 @@ function SubTodoList({
                       {sub.text}
                     </span>
                     <div className="flex items-center gap-0.5">
+                      {/* BADGE: Show count of direct children */}
+                      {!sub.completed && childCount > 0 && (
+                        <button
+                          onClick={() => toggleExpand(sub.id)}
+                          className="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium transition-colors"
+                          style={{
+                            backgroundColor: isExpanded ? "#d4d4d8" : "#e4e4e7",
+                            color: "#18181b"
+                          }}
+                        >
+                          <ListChecks className="w-3 h-3" />
+                          <span>{childCount}</span>
+                        </button>
+                      )}
+                      
                       <button
                         onClick={() => setShowInputFor((prev) => ({ ...prev, [sub.id]: !prev[sub.id] }))}
                         className="p-1 text-gray-500 hover:text-gray-800 transition-colors"
@@ -150,7 +173,7 @@ function SubTodoList({
             {/* Recursive children */}
             {isExpanded && hasChildren && (
               <SubTodoList
-                subTodos={sub.subTodos}
+                subTodos={children}
                 onAdd={(t) => onAddNested(sub.id, t)}
                 onDelete={(childId) => onDeleteNested(sub.id, childId)}
                 onToggle={(childId) => onToggleNested(sub.id, childId)}
