@@ -1,7 +1,7 @@
 import { CheckCircle, LogOut, User, X, Mail, Calendar, Pencil, Check, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getCurrentUser, logoutUser, updateUserName, updateUserEmail } from "../utils/auth";
+import { getCurrentUser, logoutUser, updateUserName } from "../utils/auth";
 
 function Header({ totalCount = 0, completedCount = 0 }) {
   const navigate = useNavigate();
@@ -17,10 +17,8 @@ function Header({ totalCount = 0, completedCount = 0 }) {
   });
 
   // --- Editing state ---
-  const [editingField, setEditingField] = useState(null); // null | "name" | "email"
+  const [editingField, setEditingField] = useState(null); // null | "name" only (email is read-only)
   const [nameInput, setNameInput] = useState("");
-  const [emailInput, setEmailInput] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [fieldError, setFieldError] = useState("");
 
@@ -52,13 +50,6 @@ function Header({ totalCount = 0, completedCount = 0 }) {
     setEditingField("name");
   }
 
-  function startEditingEmail() {
-    setEmailInput(user.email);
-    setPasswordInput("");
-    setFieldError("");
-    setEditingField("email");
-  }
-
   function cancelEditing() {
     setEditingField(null);
     setFieldError("");
@@ -79,29 +70,6 @@ function Header({ totalCount = 0, completedCount = 0 }) {
       setEditingField(null);
     } else {
       setFieldError(result.message || "Failed to update name.");
-    }
-  }
-
-  async function saveEmail() {
-    const trimmed = emailInput.trim();
-    if (!trimmed) {
-      setFieldError("Email can't be empty.");
-      return;
-    }
-    if (!passwordInput) {
-      setFieldError("Enter your current password to confirm.");
-      return;
-    }
-    setSaving(true);
-    setFieldError("");
-    const result = await updateUserEmail(trimmed, passwordInput);
-    setSaving(false);
-    if (result.success) {
-      setUser((prev) => ({ ...prev, email: trimmed }));
-      setEditingField(null);
-      setPasswordInput("");
-    } else {
-      setFieldError(result.message || "Failed to update email.");
     }
   }
 
@@ -233,7 +201,7 @@ function Header({ totalCount = 0, completedCount = 0 }) {
               </div>
 
               <div className="space-y-2">
-                {/* Full Name row */}
+                {/* Full Name row - EDITABLE */}
                 <div className="p-3 bg-gray-50 rounded-xl">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg" style={{ backgroundColor: "#f4f4f5" }}>
@@ -274,57 +242,22 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                   )}
                 </div>
 
-                {/* Email row */}
+                {/* Email row - READ ONLY (no edit button) */}
                 <div className="p-3 bg-gray-50 rounded-xl">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg" style={{ backgroundColor: "#f4f4f5" }}>
                       <Mail className="w-4 h-4" style={{ color: "#27272a" }} />
                     </div>
-
-                    {editingField === "email" ? (
-                      <div className="flex-1 flex flex-col gap-2">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="email"
-                            value={emailInput}
-                            onChange={(e) => setEmailInput(e.target.value)}
-                            placeholder="New email"
-                            autoFocus
-                            className="flex-1 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg px-2 py-1 outline-none focus:border-[#18181b]"
-                          />
-                          <button onClick={saveEmail} disabled={saving} className="p-1.5 rounded-lg hover:bg-green-50 text-green-600 disabled:opacity-50">
-                            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                          </button>
-                          <button onClick={cancelEditing} disabled={saving} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 disabled:opacity-50">
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <input
-                          type="password"
-                          value={passwordInput}
-                          onChange={(e) => setPasswordInput(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && saveEmail()}
-                          placeholder="Current password (required to confirm)"
-                          className="text-sm text-gray-700 bg-white border border-gray-200 rounded-lg px-2 py-1 outline-none focus:border-[#18181b]"
-                        />
+                    <div className="flex-1 flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-gray-400">Email</p>
+                        <p className="text-sm font-medium text-gray-700">{user.email}</p>
                       </div>
-                    ) : (
-                      <div className="flex-1 flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-gray-400">Email</p>
-                          <p className="text-sm font-medium text-gray-700">{user.email}</p>
-                        </div>
-                        <button onClick={startEditingEmail} className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-400 hover:text-gray-600">
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    )}
+                    </div>
                   </div>
-                  {editingField === "email" && fieldError && (
-                    <p className="text-xs text-red-500 mt-2 ml-11">{fieldError}</p>
-                  )}
                 </div>
 
+                {/* Member Since - READ ONLY */}
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                   <div className="p-2 rounded-lg" style={{ backgroundColor: "#f4f4f5" }}>
                     <Calendar className="w-4 h-4" style={{ color: "#27272a" }} />
@@ -344,14 +277,14 @@ function Header({ totalCount = 0, completedCount = 0 }) {
                       <p className="text-xl font-bold" style={{ color: "#18181b" }}>{totalCount}</p>
                       <p className="text-xs text-gray-400">Total</p>
                     </div>
-                  <div className="text-center p-3 rounded-xl" style={{ backgroundColor: "#f0ebf7" }}>
-  <p className="text-xl font-bold" style={{ color: "#7c3aed" }}>{completedCount}</p>
-  <p className="text-xs text-gray-400">Done</p>
-</div>
-<div className="text-center p-3 rounded-xl" style={{ backgroundColor: "#fce8f0" }}>
-  <p className="text-xl font-bold" style={{ color: "#db2777" }}>{totalCount - completedCount}</p>
-  <p className="text-xs text-gray-400">Pending</p>
-</div>
+                    <div className="text-center p-3 rounded-xl" style={{ backgroundColor: "#f0ebf7" }}>
+                      <p className="text-xl font-bold" style={{ color: "#7c3aed" }}>{completedCount}</p>
+                      <p className="text-xs text-gray-400">Done</p>
+                    </div>
+                    <div className="text-center p-3 rounded-xl" style={{ backgroundColor: "#fce8f0" }}>
+                      <p className="text-xl font-bold" style={{ color: "#db2777" }}>{totalCount - completedCount}</p>
+                      <p className="text-xs text-gray-400">Pending</p>
+                    </div>
                   </div>
                 </div>
               )}
@@ -389,6 +322,3 @@ function Header({ totalCount = 0, completedCount = 0 }) {
 }
 
 export default Header;
-
-
-
