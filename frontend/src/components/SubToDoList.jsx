@@ -28,7 +28,7 @@ function SubTodoList({
     setExpandedItems((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
-  // Count direct children only for the badge
+  // Count direct children only
   function countDirectChildren(subTodos) {
     return subTodos ? subTodos.length : 0;
   }
@@ -36,11 +36,11 @@ function SubTodoList({
   return (
     <div className="mt-2 space-y-1">
       {subTodos.map((sub) => {
+        // Get children array
         const children = sub.subTodos || [];
         const hasChildren = children.length > 0;
         const isExpanded = expandedItems[sub.id] || false;
         const showInput = showInputFor[sub.id] || false;
-        // Count direct children only
         const childCount = countDirectChildren(children);
 
         return (
@@ -85,7 +85,7 @@ function SubTodoList({
                       {sub.text}
                     </span>
                     <div className="flex items-center gap-0.5">
-                      {/* BADGE: Show count of direct children */}
+                      {/* BADGE: Shows count of children for THIS subtask */}
                       {!sub.completed && childCount > 0 && (
                         <button
                           onClick={() => toggleExpand(sub.id)}
@@ -132,7 +132,7 @@ function SubTodoList({
               </div>
             </div>
 
-            {/* Nested input */}
+            {/* Input for adding nested subtask */}
             {showInput && (
               <div className="flex items-center gap-2 mt-1 rounded-xl bg-gray-100 px-3 py-2"
                 style={{ marginLeft: `${(level + 1) * 20 + 20}px` }}>
@@ -170,7 +170,7 @@ function SubTodoList({
               </div>
             )}
 
-            {/* Recursive children */}
+            {/* Recursive children - passes children to next level */}
             {isExpanded && hasChildren && (
               <SubTodoList
                 subTodos={children}
@@ -189,7 +189,7 @@ function SubTodoList({
         );
       })}
 
-      {/* Add subtask input */}
+      {/* Add subtask input at current level */}
       <div className="flex items-center gap-2 mt-2 rounded-xl bg-gray-100 px-3 py-2"
         style={{ marginLeft: `${level * 20 + 20}px` }}>
         <Input

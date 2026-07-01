@@ -14,7 +14,6 @@ function TodoItem({
 
   function handleToggle() {
     if (!todo.completed) {
-      // marking complete — hide subtasks
       setShowSubs(false);
     }
     onToggle(todo.id);
@@ -25,19 +24,12 @@ function TodoItem({
     setIsEditing(false);
   }
 
-  // Recursive function to count all subtasks
-  function countAllSubTasks(subTodos) {
-    if (!subTodos || subTodos.length === 0) return 0;
-    let count = subTodos.length;
-    subTodos.forEach(sub => {
-      if (sub.subTodos && sub.subTodos.length > 0) {
-        count += countAllSubTasks(sub.subTodos);
-      }
-    });
-    return count;
+  // Count direct children only
+  function countDirectChildren(subTodos) {
+    return subTodos ? subTodos.length : 0;
   }
 
-  const totalSubs = countAllSubTasks(todo.subTodos);
+  const totalSubs = countDirectChildren(todo.subTodos);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -75,7 +67,7 @@ function TodoItem({
             </span>
 
             <div className="flex items-center gap-1">
-              {/* Subtask Count Badge */}
+              {/* Subtask Count Badge for top-level tasks */}
               {!todo.completed && totalSubs > 0 && (
                 <button
                   onClick={() => setShowSubs(!showSubs)}
@@ -123,7 +115,7 @@ function TodoItem({
         )}
       </div>
 
-      {/* Subtasks — only shown when todo is NOT completed */}
+      {/* Subtasks */}
       {showSubs && !todo.completed && (
         <div className="px-4 pb-3 border-t border-gray-100">
           <SubTodoList
