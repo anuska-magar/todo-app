@@ -202,6 +202,7 @@ function TodoList({ onCountChange }) {
 
     try {
       await Promise.all(idsToDelete.map((taskId) => deleteTask(taskId)));
+      showToast("success", "Task deleted", "The task was removed successfully.");
     } catch (err) {
       console.error(err);
       setTodos(previousTodos); // rollback
